@@ -4,12 +4,9 @@
  *  (see accompanying file LICENSE).
  */
 
-package nl.hyve.gb.backend
+package nl.hyve.gb.backend.exception
 
-class BootStrap {
+import groovy.transform.InheritConstructors
 
-    def init = { servletContext ->
-    }
-    def destroy = {
-    }
-}
+@InheritConstructors
+class NoSuchResourceException extends Exception { }
