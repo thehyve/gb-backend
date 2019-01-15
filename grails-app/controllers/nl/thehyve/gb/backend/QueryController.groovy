@@ -6,11 +6,9 @@
 
 package nl.thehyve.gb.backend
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import grails.converters.JSON
 import grails.web.mime.MimeType
 import nl.thehyve.gb.backend.exception.BindingException
-import nl.thehyve.gb.backend.exception.InvalidArgumentsException
 import nl.thehyve.gb.backend.exception.InvalidRequestException
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.user.AuthContext
@@ -41,7 +39,7 @@ class QueryController {
         response.status = HttpStatus.OK.value()
         response.contentType = 'application/json'
         response.characterEncoding = 'utf-8'
-        BindingHelper.writeValue(response.outputStream, [queries: queries])
+        BindingHelper.write(response.outputStream, [queries: queries])
     }
 
     /**
@@ -57,29 +55,25 @@ class QueryController {
         response.status = HttpStatus.OK.value()
         response.contentType = 'application/json'
         response.characterEncoding = 'utf-8'
-        BindingHelper.writeValue(response.outputStream, query)
+        BindingHelper.write(response.outputStream, query)
     }
 
-    protected static QueryRepresentation getUserQueryFromString(String src) {
-        if (src == null || src.trim().empty) {
-            throw new InvalidArgumentsException('Empty user query.')
-        }
+    protected static QueryRepresentation getQueryFromInputStream(InputStream inputStream) {
         try {
-            try {
-                QueryRepresentation userQuery = BindingHelper.read(src, QueryRepresentation.class)
-                userQuery
-            } catch (JsonProcessingException e) {
-                throw new InvalidArgumentsException("Cannot parse query parameter: ${e.message}", e)
+            QueryRepresentation userQuery = BindingHelper.read(inputStream, QueryRepresentation.class)
+            if (userQuery == null) {
+                throw new BindingException('Empty query.')
             }
+            return userQuery
         } catch (ConverterException c) {
-            throw new InvalidArgumentsException('Cannot parse query parameter', c)
+            throw new BindingException('Cannot parse query parameter', c)
         }
     }
 
     /**
      * Deserialises the request body to a user query representation object using Jackson.
      *
-     * @returns the user query representation object is deserialisation was successful;
+     * @returns the user query representation object if deserialisation was successful;
      * responds with code 400 and returns null otherwise.
      */
     protected QueryRepresentation bindUserQuery() {
@@ -92,8 +86,7 @@ class QueryController {
         }
 
         try {
-            def src = BindingHelper.write(request.JSON)
-            return getUserQueryFromString(src)
+            return getQueryFromInputStream(request.inputStream)
         } catch (BindingException e) {
             def error = [
                     httpStatus: HttpStatus.BAD_REQUEST.value(),
@@ -128,7 +121,7 @@ class QueryController {
         response.status = HttpStatus.CREATED.value()
         response.contentType = 'application/json'
         response.characterEncoding = 'utf-8'
-        BindingHelper.writeValue(response.outputStream, query)
+        BindingHelper.write(response.outputStream, query)
     }
 
     /**
@@ -150,7 +143,7 @@ class QueryController {
         response.status = HttpStatus.OK.value()
         response.contentType = 'application/json'
         response.characterEncoding = 'utf-8'
-        BindingHelper.writeValue(response.outputStream, query)
+        BindingHelper.write(response.outputStream, query)
     }
 
     /**

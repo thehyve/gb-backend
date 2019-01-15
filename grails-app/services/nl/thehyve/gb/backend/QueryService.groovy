@@ -36,12 +36,12 @@ class QueryService {
             new QueryRepresentation(
                     id,
                     name,
-                    queryConstraint ? BindingHelper.read(queryConstraint, Object) : null,
+                    queryConstraint ? BindingHelper.readFromString(queryConstraint, Object) : null,
                     apiVersion,
                     bookmarked,
                     subscribed,
                     subscriptionFreq,
-                    queryBlob ? BindingHelper.read(queryBlob, Object) : null,
+                    queryBlob ? BindingHelper.readFromString(queryBlob, Object) : null,
                     createDate,
                     updateDate,
             )
@@ -91,11 +91,11 @@ class QueryService {
 
         query.with {
             name = representation.name
-            queryConstraint = BindingHelper.write(representation.constraint)
+            queryConstraint = BindingHelper.writeAsString(representation.constraint)
             bookmarked = representation.bookmarked ?: false
             subscribed = representation.subscribed ?: false
             subscriptionFreq = representation.subscriptionFreq
-            queryBlob = BindingHelper.write(representation.queryBlob)
+            queryBlob = BindingHelper.writeAsString(representation.queryBlob)
             apiVersion = representation.apiVersion
         }
 
@@ -131,7 +131,7 @@ class QueryService {
                 }
                 // Check query access when subscription is enabled
                 // TODO TMT-686
-                // checkConstraintAccess(ConstraintFactory.read(query.patientsQuery), currentUser)
+                // checkConstraintAccess(ConstraintFactory.readFromString(query.patientsQuery), currentUser)
                 if (!query.subscribed) {
                     // This is a new subscription, an initial patient set needs to be generated
                     newSubscription = true

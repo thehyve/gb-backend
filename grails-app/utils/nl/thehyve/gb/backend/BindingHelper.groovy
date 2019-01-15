@@ -26,16 +26,29 @@ class BindingHelper {
         new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
     }
 
-    static String write(Object o) {
+    static String writeAsString(Object o) {
         objectMapper.writeValueAsString(o)
     }
 
-    static writeValue(OutputStream out, Object value) {
+    static write(OutputStream out, Object value) {
         objectMapper.writeValue(out, value)
     }
 
-    static <T> T read(String content, Class<T> type) {
+    static <T> T read(InputStream content, Class<T> type) {
         if (content == null) {
+            return null
+        }
+        try {
+            def object = (T) objectMapper.readValue(content, type)
+            validate(object)
+            object
+        } catch (JsonProcessingException e) {
+            throw new BindingException("Cannot parse parameters: ${e.message}", e)
+        }
+    }
+
+    static <T> T readFromString(String content, Class<T> type) {
+        if (content == null || content.trim().empty) {
             return null
         }
         try {
