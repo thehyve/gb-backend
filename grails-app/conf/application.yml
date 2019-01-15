@@ -2,7 +2,7 @@
 grails:
     profile: rest-api
     codegen:
-        defaultPackage: nl.hyve.gb.backend
+        defaultPackage: nl.thehyve.gb.backend
     spring:
         transactionManagement:
             proxies: false

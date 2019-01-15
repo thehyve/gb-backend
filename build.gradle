@@ -11,7 +11,7 @@ buildscript {
 }
 
 version "0.1"
-group "nl.hyve.gb.backend"
+group "nl.thehyve.gb.backend"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
