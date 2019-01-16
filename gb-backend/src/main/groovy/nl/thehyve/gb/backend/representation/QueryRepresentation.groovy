@@ -12,6 +12,7 @@ import groovy.transform.CompileStatic
 import nl.thehyve.gb.backend.SubscriptionFrequency
 
 import javax.validation.constraints.Size
+import javax.validation.constraints.NotNull
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING
 
@@ -24,7 +25,8 @@ class QueryRepresentation {
     @Size(min = 1)
     String name
 
-    Object constraint
+    @NotNull
+    Object queryConstraint
 
     String apiVersion
 

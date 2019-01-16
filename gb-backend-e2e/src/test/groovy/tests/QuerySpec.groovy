@@ -41,7 +41,7 @@ class QuerySpec extends RESTSpec {
         def responseData2 = getQuery(id, 404, Config.UNRESTRICTED_USER)
 
         then:
-        responseData2.message == "Query with id ${id} not found for user."
+        responseData2.error == "Query with id ${id} not found for user."
     }
 
     def "save query"() {
@@ -57,13 +57,12 @@ class QuerySpec extends RESTSpec {
         responseData.apiVersion != null
         responseData.bookmarked == true
         responseData.subscribed == false
-        responseData.subscriptionFreq == 'DAILY'
 
         responseData.createDate.endsWith('Z')
         responseData.updateDate.endsWith('Z')
     }
 
-    def "save query wo patients and observations queries"() {
+    def "save query without constraints"() {
         when:
         def responseData = RestHelper.toObject post([
                 path      : Config.PATH_QUERY,
@@ -72,14 +71,13 @@ class QuerySpec extends RESTSpec {
                 statusCode: 400,
                 body      : [
                         name             : 'test query',
-                        queryConstraint  : null,
                         bookmarked       : true,
                         subscribed       : false,
                 ],
         ]), ErrorResponse
 
         then:
-        responseData.message == 'Cannot subscribe to an empty query.'
+        responseData.message == '1 error(s): queryConstraint: may not be null'
     }
 
     def "update query"() {
@@ -95,7 +93,6 @@ class QuerySpec extends RESTSpec {
                         name             : 'test query 2',
                         bookmarked       : false,
                         subscribed       : false,
-                        subscriptionFreq : ''
                 ],
         ])
 
@@ -103,7 +100,6 @@ class QuerySpec extends RESTSpec {
         updatedQuery.name == 'test query 2'
         updatedQuery.bookmarked == false
         updatedQuery.subscribed == false
-        updatedQuery.subscriptionFreq == ''
 
         when: 'try to update query by a different user'
         def updateResponseData1 = RestHelper.toObject put([
@@ -117,7 +113,7 @@ class QuerySpec extends RESTSpec {
         ]), ErrorResponse
 
         then:
-        updateResponseData1.message == "Query with id ${id} not found for user."
+        updateResponseData1.error == "Query with id ${id} not found for user."
     }
 
     def "delete query"() {
@@ -131,7 +127,7 @@ class QuerySpec extends RESTSpec {
                 statusCode: 404,
         ])
         then:
-        forbidDeleteResponseData.message == "Query with id ${id} not found for user."
+        forbidDeleteResponseData.error == "Query with id ${id} not found for user."
 
         when:
         def deleteResponseData = delete([
@@ -143,7 +139,7 @@ class QuerySpec extends RESTSpec {
 
         then:
         deleteResponseData == null
-        getQuery(id, 404).message == "Query with id ${id} not found for user."
+        getQuery(id, 404).error == "Query with id ${id} not found for user."
         !getQueriesForUser().queries.any { it.id == id }
     }
 
@@ -158,8 +154,11 @@ class QuerySpec extends RESTSpec {
                         queryConstraint  : [type: 'true'],// TODO replace with TrueConstraint representation from tm-core-api
                         bookmarked       : true,
                         subscribed       : false,
-                        subscriptionFreq : null,
-                        queryBlob        : []
+                        queryBlob        : [
+                                patientsQueryFull: [
+                                        constraint: [type: 'true']
+                                ]
+                        ]
                 ],
         ])
     }

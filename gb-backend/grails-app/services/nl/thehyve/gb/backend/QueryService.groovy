@@ -12,8 +12,8 @@ import groovy.transform.CompileStatic
 import nl.thehyve.gb.backend.exception.AccessDeniedException
 import nl.thehyve.gb.backend.exception.InvalidArgumentsException
 import nl.thehyve.gb.backend.exception.NoSuchResourceException
-import nl.thehyve.gb.backend.exception.ServiceNotAvailableException
 import nl.thehyve.gb.backend.representation.QueryRepresentation
+import nl.thehyve.gb.backend.representation.QueryUpdateRepresentation
 import nl.thehyve.gb.backend.user.User
 
 import java.util.stream.Collectors
@@ -26,7 +26,7 @@ class QueryService {
         boolean subscriptionFreqSpecified = subscriptionFreq != null
         boolean subscriptionEnabled = Holders.config.getProperty('nl.thehyve.gb.backend.notifications.enabled', Boolean)
         if (!subscriptionEnabled && (subscribed || subscriptionFreqSpecified)) {
-            throw new ServiceNotAvailableException(
+            throw new InvalidArgumentsException(
                     "Subscription functionality is not enabled. Saving subscription data not supported.")
         }
     }
@@ -76,12 +76,9 @@ class QueryService {
 
     QueryRepresentation create(QueryRepresentation representation, User currentUser) {
         def query = new Query(username: currentUser.username)
-        if (representation.name ==  null || representation.name.trim().empty) {
-            throw new InvalidArgumentsException("Query name is empty.")
-        }
         validateSubscriptionEnabled(representation.subscribed, representation.subscriptionFreq)
         if (representation.subscribed) {
-            if (!representation.constraint) {
+            if (!representation.queryConstraint) {
                 throw new InvalidArgumentsException("Cannot subscribe to a query with empty constraints.")
             }
             // Check query access when subscription is enabled
@@ -91,7 +88,7 @@ class QueryService {
 
         query.with {
             name = representation.name
-            queryConstraint = BindingHelper.writeAsString(representation.constraint)
+            queryConstraint = BindingHelper.writeAsString(representation.queryConstraint)
             bookmarked = representation.bookmarked ?: false
             subscribed = representation.subscribed ?: false
             subscriptionFreq = representation.subscriptionFreq
@@ -112,7 +109,7 @@ class QueryService {
         result
     }
 
-    QueryRepresentation update(Long id, QueryRepresentation representation, User currentUser) {
+    QueryRepresentation update(Long id, QueryUpdateRepresentation representation, User currentUser) {
         validateSubscriptionEnabled(representation.subscribed, representation.subscriptionFreq)
 
         Query query = fetch(id, currentUser)

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
 import nl.thehyve.gb.backend.exception.BindingException
+import org.grails.web.converters.exceptions.ConverterException
+
 import javax.validation.ConstraintViolation
 import javax.validation.Validation
 import javax.validation.Validator
@@ -24,6 +26,18 @@ class BindingHelper {
 
     static ObjectMapper getObjectMapper() {
         new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
+    }
+
+    static <T> T getRepresentationFromInputStream(InputStream inputStream, Class<T> type) {
+        try {
+            def input = (T) read(inputStream, type)
+            if (input == null) {
+                throw new BindingException('Empty input.')
+            }
+            return input
+        } catch (ConverterException c) {
+            throw new BindingException('Cannot parse input parameter', c)
+        }
     }
 
     static String writeAsString(Object o) {
