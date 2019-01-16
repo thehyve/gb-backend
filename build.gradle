@@ -6,18 +6,16 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
-        classpath "org.grails.plugins:views-gradle:1.2.9"
     }
 }
 
 version "0.1"
-group "nl.hyve.gb.backend"
+group "nl.thehyve.gb.backend"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
 apply plugin:"org.grails.grails-web"
-apply plugin:"org.grails.plugins.views-json"
 
 repositories {
     mavenLocal()
@@ -53,19 +51,13 @@ dependencies {
     compile "org.hibernate:hibernate-core:5.1.16.Final"
     compile "org.grails.plugins:views-json"
     compile "org.grails.plugins:views-json-templates"
-    console "org.grails:grails-console"
+    console("org.grails:grails-console") {
+        exclude group: 'org.fusesource.jansi', module: 'jansi'
+    }
     profile "org.grails.profiles:rest-api"
-    runtime "org.glassfish.web:el-impl:2.1.2-b03"
     runtime "com.h2database:h2"
     runtime "org.apache.tomcat:tomcat-jdbc"
     runtime 'org.postgresql:postgresql:42.2.5'
-    testCompile "org.grails:grails-gorm-testing-support"
-    testCompile "org.grails:grails-datastore-rest-client"
-    testCompile "org.grails:grails-web-testing-support"
-    testCompile "org.grails.plugins:geb:1.1.2"
-    testRuntime "org.seleniumhq.selenium:selenium-chrome-driver:2.47.1"
-    testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
-    testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 
     compile "org.keycloak:keycloak-spring-boot-starter:4.0.0.Final"
     compile "org.springframework.boot:spring-boot-starter-security"

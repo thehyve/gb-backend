@@ -2,10 +2,24 @@
 grails:
     profile: rest-api
     codegen:
-        defaultPackage: nl.hyve.gb.backend
+        defaultPackage: nl.thehyve.gb.backend
     spring:
         transactionManagement:
             proxies: false
+    gorm:
+        failOnError: true
+        reactor:
+            # Whether to translate GORM events into Reactor events
+            # Disabled by default for performance reasons
+            events: false
+        default:
+            # Turn off automatic versioning and timestamping by GORM
+            mapping:
+                version: false
+                autoTimestamp: false
+    databinding:
+        convertEmptyStringsToNull: false
+
 info:
     app:
         name: '@info.app.name@'
@@ -61,6 +75,14 @@ grails:
         encoding: UTF-8
 
 ---
+grails:
+    cors:
+        enabled: true
+
+server:
+    port: 8083
+
+---
 hibernate:
     show_sql: true
     format_sql: true
@@ -81,6 +103,12 @@ environments:
         dataSource:
             dbCreate: update
             url: jdbc:postgresql://localhost:5432/gb_backend
+        keycloak:
+            realm: dev
+            bearer-only: true
+            auth-server-url: http://localhost:8080/auth
+            resource: transmart
+            use-resource-role-mappings: true
     test:
         dataSource:
             dbCreate: create
@@ -88,6 +116,12 @@ environments:
             driverClassName: org.h2.Driver
             username: sa
             password: ''
+        keycloak:
+            realm: test
+            bearer-only: true
+            auth-server-url: http://localhost:8080/auth
+            resource: transmart
+            use-resource-role-mappings: true
     production:
         hibernate:
             show_sql: false

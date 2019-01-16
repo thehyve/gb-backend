@@ -22,6 +22,8 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 
+root(WARN, ['STDOUT'])
+
 def targetDir = BuildSettings.TARGET_DIR
 if (Environment.isDevelopmentMode() && targetDir != null) {
     appender("FULL_STACKTRACE", FileAppender) {
@@ -32,6 +34,7 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
         }
     }
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+    logger('org.hibernate', ERROR)
     root(ERROR, ['STDOUT', 'FULL_STACKTRACE'])
 }
 else {
