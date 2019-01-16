@@ -76,6 +76,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact file("${libsDir}/${project.name}-${project.version}.war")
+            artifactId 'gb-backend'
 
         }
     }
