@@ -1,11 +1,29 @@
-Thumbs.db
-.DS_Store
-.gradle
-build/
+# Gradle
+gradle/wrapper
+/.gradle
+/gradlew
+/gradlew.bat
+out
+
+# IDEs and editors
 .idea
+*/.idea
 *.iml
-*.ipr
-*.iws
+/lib
 .project
-.settings
 .classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# System Files
+.DS_Store
+Thumbs.db
