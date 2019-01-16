@@ -9,7 +9,7 @@ buildscript {
     }
 }
 
-version "0.1"
+version "0.1-SNAPSHOT"
 group "nl.thehyve.gb.backend"
 
 apply plugin:"eclipse"
