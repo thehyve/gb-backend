@@ -54,7 +54,6 @@ class QuerySpec extends RESTSpec {
         responseData.id != null
         responseData.name == 'test query'
         responseData.queryConstraint.type == 'true'
-        responseData.apiVersion != null
         responseData.bookmarked == true
         responseData.subscribed == false
 

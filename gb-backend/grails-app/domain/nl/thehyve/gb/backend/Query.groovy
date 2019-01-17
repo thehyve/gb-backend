@@ -11,7 +11,6 @@ class Query {
     String name
     String username
     String queryConstraint
-    String apiVersion
     Boolean bookmarked = false
     Boolean deleted = false
     Boolean subscribed = false
@@ -33,7 +32,6 @@ class Query {
         name maxSize: 1000
         username maxSize: 50
         queryConstraint nullable: false
-        apiVersion nullable: true, maxSize: 25
         bookmarked nullable: true
         subscribed nullable: true
         subscriptionFreq nullable: true

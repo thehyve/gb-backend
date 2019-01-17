@@ -28,8 +28,6 @@ class QueryRepresentation {
     @NotNull
     Object queryConstraint
 
-    String apiVersion
-
     Boolean bookmarked
 
     Boolean subscribed

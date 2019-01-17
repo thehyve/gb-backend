@@ -37,7 +37,6 @@ class QueryService {
                     id,
                     name,
                     queryConstraint ? BindingHelper.readFromString(queryConstraint, Object) : null,
-                    apiVersion,
                     bookmarked,
                     subscribed,
                     subscriptionFreq,
@@ -93,7 +92,6 @@ class QueryService {
             subscribed = representation.subscribed ?: false
             subscriptionFreq = representation.subscriptionFreq
             queryBlob = BindingHelper.writeAsString(representation.queryBlob)
-            apiVersion = representation.apiVersion
         }
 
         query = save(query, currentUser)
