@@ -4,6 +4,7 @@ gradle/wrapper
 /gradlew
 /gradlew.bat
 out
+/build
 
 # IDEs and editors
 .idea
