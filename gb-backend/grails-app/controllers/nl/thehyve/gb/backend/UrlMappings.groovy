@@ -19,5 +19,7 @@ class UrlMappings {
 
         "/queries/$id"(method: 'DELETE', controller: 'query', action: 'delete')
 
+        "/dimensions/$dimensionName/elements"(method: 'POST', controller: 'querySet', action: 'dimensionElements')
+
     }
 }

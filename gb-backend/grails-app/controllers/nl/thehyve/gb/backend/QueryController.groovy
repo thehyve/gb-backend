@@ -16,7 +16,7 @@ import nl.thehyve.gb.backend.exception.NoSuchResourceException
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.representation.QueryUpdateRepresentation
 import nl.thehyve.gb.backend.user.AuthContext
-import org.grails.web.converters.exceptions.ConverterException
+import nl.thehyve.gb.backend.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable

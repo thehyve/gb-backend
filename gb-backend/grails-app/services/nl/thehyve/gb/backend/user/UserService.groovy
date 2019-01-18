@@ -7,24 +7,16 @@
 package nl.thehyve.gb.backend.user
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.keycloak.representations.AccessToken
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 
 import java.security.Principal
 
+@Slf4j
 @CompileStatic
 class UserService {
-
-    @Value('${keycloak.realm}')
-    String realm
-
-    @Value('${keycloak.resource}')
-    String clientId
-
-    @Value('${keycloak.auth-server-url}')
-    String keycloakServerUrl
 
     User getUserFromPrincipal(Principal principal) {
         assert principal instanceof Authentication
