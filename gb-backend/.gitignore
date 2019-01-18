@@ -1,0 +1,15 @@
+# Gradle
+gradle/wrapper
+/.gradle
+/gradlew
+/gradlew.bat
+out
+
+/build
+/.idea
+*.iml
+*.ipr
+*.iws
+/.project
+/.settings
+/.classpath

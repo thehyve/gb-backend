@@ -1,0 +1,9 @@
+include 'gb-backend'
+
+//e2e tests excluded from list of submodules.
+//Uncomment the line when the e2e tests will be self-sufficient:
+//e.g. no external keycloak instance running will be re required
+//So we can safely run these tests on travis
+//include 'gb-backend-e2d'
+
+rootProject.name = 'gb-backend'
