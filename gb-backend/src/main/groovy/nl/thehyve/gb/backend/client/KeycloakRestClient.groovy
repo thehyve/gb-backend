@@ -9,11 +9,16 @@ package nl.thehyve.gb.backend.client
 import grails.util.Holders
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import nl.thehyve.gb.backend.client.utils.BearerTokenInterceptor
 import org.apache.http.client.HttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.ssl.SSLContexts
 import org.keycloak.representations.AccessTokenResponse
-import org.springframework.beans.factory.annotation.Value
+import org.keycloak.representations.idm.ClientMappingsRepresentation
+import org.keycloak.representations.idm.MappingsRepresentation
+import org.keycloak.representations.idm.RoleRepresentation
+import org.keycloak.representations.idm.UserRepresentation
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.stereotype.Component
@@ -26,7 +31,7 @@ import java.security.cert.X509Certificate
 @Component
 @Slf4j
 @CompileStatic
-class KeycloakRestClient {
+class KeycloakRestClient extends AbstractRestClient {
 
     private static String realm = Holders.config['keycloak']['realm']
     private static String clientId = Holders.config['keycloak']['resource']
@@ -41,10 +46,53 @@ class KeycloakRestClient {
         Holders.config.getProperty('keycloak.disable-trust-manager', Boolean, false)
     }()
 
+    Set<String> getRolesForUserByOfflineToken(String userId) {
+        String accessToken = getAccessTokenByOfflineTokenAndClientId()
+        getRoles(userId, accessToken)
+    }
+
+    List<UserRepresentation> getUsersByOfflineToken() {
+        String accessToken = getAccessTokenByOfflineTokenAndClientId()
+        getUsers(accessToken)
+    }
 
     String getImpersonatedTokenByOfflineTokenForUser(String impersonatedUserName) {
         String offlineAccessToken = getAccessTokenByOfflineTokenAndClientId()
         exchangeToken(offlineAccessToken, impersonatedUserName)
+    }
+
+    static ParameterizedTypeReference<List<UserRepresentation>> userListRef =
+            new ParameterizedTypeReference<List<UserRepresentation>>() {}
+
+    private List<UserRepresentation> getUsers(String accessToken) {
+        def template = restTemplate
+        template.interceptors.add(new BearerTokenInterceptor(accessToken))
+        ResponseEntity<List<UserRepresentation>> response = restTemplate
+                .exchange("${keycloakServerUrl}/admin/realms/${realm}/users", HttpMethod.GET, null, userListRef)
+
+        response.body
+    }
+
+    private  Set<String> getRoles(String userId, String accessToken) {
+        def template = restTemplate
+        template.interceptors.add(new BearerTokenInterceptor(accessToken))
+        ResponseEntity<MappingsRepresentation> response = restTemplate.getForEntity(
+                "$keycloakServerUrl/admin/realms/$realm/users/$userId/role-mappings",
+                MappingsRepresentation.class)
+
+        Map<String, ClientMappingsRepresentation> rolesPerClient = response.body.clientMappings
+        Set<String> roles = []
+        ClientMappingsRepresentation clientMappings = rolesPerClient.get(clientId)
+        if (clientMappings) {
+            for (RoleRepresentation roleRepresentation: clientMappings.mappings) {
+                roles.add(roleRepresentation.name)
+            }
+        } else {
+            log.debug("No client role mappings for $clientId client were found.")
+        }
+        log.debug("${userId} user has following roles on ${clientId} client: ${roles}.")
+
+        roles
     }
 
     private static HttpClient getHttpClientWithoutCertificateChecking() {
@@ -58,7 +106,8 @@ class KeycloakRestClient {
                 .build()
     }
 
-    private RestTemplate getRestTemplate() {
+    @Override
+    RestTemplate getRestTemplate() {
         def requestFactory = new HttpComponentsClientHttpRequestFactory()
         if (keycloakDisableTrustManager) {
             requestFactory.setHttpClient(httpClientWithoutCertificateChecking)

@@ -6,6 +6,7 @@
 
 package nl.thehyve.gb.backend.user
 
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Scope
 import org.springframework.context.annotation.ScopedProxyMode
@@ -27,6 +28,12 @@ class SpringSecurityAuthContext implements AuthContext {
     @Override
     User getUser() {
         userService.getUserFromPrincipal(getAuthentication())
+    }
+
+    @Override
+    String getTokenString(){
+        assert authentication.details instanceof SimpleKeycloakAccount
+        ((SimpleKeycloakAccount) authentication.details).keycloakSecurityContext.tokenString
     }
 
     @Override

@@ -49,7 +49,6 @@ class QuerySpec extends RESTSpec {
         def responseData = createQuery()
 
         then:
-        !('username' in responseData)
         !('deleted' in responseData)
         responseData.id != null
         responseData.name == 'test query'

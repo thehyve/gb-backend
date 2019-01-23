@@ -7,7 +7,6 @@
 package nl.thehyve.gb.backend.client.utils
 
 import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import nl.thehyve.gb.backend.client.KeycloakRestClient
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpRequest
@@ -15,14 +14,13 @@ import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 
-@Slf4j
 @CompileStatic
-class ImpersonationInterceptor implements ClientHttpRequestInterceptor {
+class BearerTokenInterceptor implements ClientHttpRequestInterceptor {
 
-    private static String impersonatedUserName
+    private static String tokenString
 
-    ImpersonationInterceptor(String username) {
-        impersonatedUserName = username
+    BearerTokenInterceptor(String tokenString) {
+        this.tokenString = tokenString
     }
 
     @Override
@@ -31,8 +29,7 @@ class ImpersonationInterceptor implements ClientHttpRequestInterceptor {
 
         HttpHeaders headers = request.getHeaders()
         if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
-            def accessToken = new KeycloakRestClient().getImpersonatedTokenByOfflineTokenForUser(impersonatedUserName)
-            headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + tokenString)
         }
         return execution.execute(request, body)
     }

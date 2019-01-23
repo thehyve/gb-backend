@@ -1,4 +1,11 @@
 ---
+nl.thehyve.gb.backend:
+    subscription:
+        enabled: true
+    notifications:
+        enabled: false
+
+---
 grails:
     profile: rest-api
     codegen:
@@ -103,6 +110,9 @@ environments:
         dataSource:
             dbCreate: update
             url: jdbc:postgresql://localhost:5432/gb_backend
+        transmart:
+            server-url: http://localhost:8081
+            api-version: v2
         keycloak:
             realm: dev
             bearer-only: true
@@ -119,6 +129,9 @@ environments:
             driverClassName: org.h2.Driver
             username: sa
             password: ''
+        transmart:
+            server-url: http://localhost:8081
+            api-version: v2
         keycloak:
             realm: test
             bearer-only: true
@@ -150,5 +163,3 @@ environments:
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
 
-transmart:
-    server-url: http://localhost:8081

@@ -6,7 +6,7 @@
 
 package nl.thehyve.gb.backend
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import groovy.transform.CompileStatic
 import nl.thehyve.gb.backend.exception.AccessDeniedException
@@ -15,6 +15,7 @@ import nl.thehyve.gb.backend.exception.NoSuchResourceException
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.representation.QueryUpdateRepresentation
 import nl.thehyve.gb.backend.user.User
+import org.springframework.beans.factory.annotation.Autowired
 
 import java.util.stream.Collectors
 
@@ -22,19 +23,14 @@ import java.util.stream.Collectors
 @CompileStatic
 class QueryService {
 
-    private static void validateSubscriptionEnabled(Boolean subscribed, SubscriptionFrequency subscriptionFreq) {
-        boolean subscriptionFreqSpecified = subscriptionFreq != null
-        boolean subscriptionEnabled = Holders.config.getProperty('nl.thehyve.gb.backend.notifications.enabled', Boolean)
-        if (!subscriptionEnabled && (subscribed || subscriptionFreqSpecified)) {
-            throw new InvalidArgumentsException(
-                    "Subscription functionality is not enabled. Saving subscription data not supported.")
-        }
-    }
+    @Autowired
+    QuerySetService querySetService
 
     static QueryRepresentation toRepresentation(Query query) {
         query.with {
             new QueryRepresentation(
                     id,
+                    username,
                     name,
                     queryConstraint ? BindingHelper.readFromString(queryConstraint, Object) : null,
                     bookmarked,
@@ -57,34 +53,47 @@ class QueryService {
                 .collect(Collectors.toList())
     }
 
-    protected Query fetch(Long id, User currentUser) {
+    Query getQueryById(Long id) throws NoSuchResourceException {
+        def query = Query.createCriteria().get {
+            idEq id
+        } as Query
+        if (!query) {
+            throw new NoSuchResourceException("Query with id ${id} not found.")
+        }
+        query
+    }
+
+    QueryRepresentation getQueryRepresentationByIdAndUsername(Long id, User currentUser) {
+        toRepresentation(getQueryByIdAndUsername(id, currentUser))
+    }
+
+    Query getQueryByIdAndUsername(Long id, User currentUser) throws NoSuchResourceException {
         def query = Query.createCriteria().get {
             eq 'id', id
             eq 'username', currentUser.username
             eq 'deleted', false
         } as Query
         if (!query) {
-            throw new NoSuchResourceException("Query with id ${id} not found for user.")
+            throw new NoSuchResourceException("Query with id ${id} not found for user ${currentUser.username}.")
         }
         query
     }
 
-    QueryRepresentation get(Long id, User currentUser) {
-        toRepresentation(fetch(id, currentUser))
+    List<Query> getQueriesSubscribedAndNotDeleted() {
+        Query.createCriteria().list {
+            eq 'deleted', false
+            eq 'subscribed', true
+        } as List<Query>
     }
 
-    QueryRepresentation create(QueryRepresentation representation, User currentUser) {
+    QueryRepresentation create(QueryRepresentation representation, User currentUser) throws InvalidArgumentsException {
         def query = new Query(username: currentUser.username)
         validateSubscriptionEnabled(representation.subscribed, representation.subscriptionFreq)
         if (representation.subscribed) {
             if (!representation.queryConstraint) {
                 throw new InvalidArgumentsException("Cannot subscribe to a query with empty constraints.")
             }
-            // Check query access when subscription is enabled
-            // TODO TMT-686
-            // checkConstraintAccess(representation.queryConstraint, currentUser)
         }
-
         query.with {
             name = representation.name
             queryConstraint = BindingHelper.writeAsString(representation.queryConstraint)
@@ -93,24 +102,22 @@ class QueryService {
             subscriptionFreq = representation.subscriptionFreq
             queryBlob = BindingHelper.writeAsString(representation.queryBlob)
         }
-
         query = save(query, currentUser)
 
         def result = toRepresentation(query)
 
         if (query.subscribed) {
-            // Create initial patient set when subscription is enabled
-            //TODO TMT-686
-            //querySetService.createSetWithInstances(result, currentUser)
+            querySetService.createQuerySetWithQueryInstances(result)
         }
 
         result
     }
 
-    QueryRepresentation update(Long id, QueryUpdateRepresentation representation, User currentUser) {
+    QueryRepresentation update(Long id, QueryUpdateRepresentation representation, User currentUser)
+            throws InvalidArgumentsException{
         validateSubscriptionEnabled(representation.subscribed, representation.subscriptionFreq)
 
-        Query query = fetch(id, currentUser)
+        Query query = getQueryByIdAndUsername(id, currentUser)
 
         if (representation.name != null) {
             query.name = representation.name
@@ -124,9 +131,6 @@ class QueryService {
                 if (!query.queryConstraint) {
                     throw new InvalidArgumentsException("Cannot subscribe to a query with empty constraints.")
                 }
-                // Check query access when subscription is enabled
-                // TODO TMT-686
-                // checkConstraintAccess(ConstraintFactory.readFromString(query.patientsQuery), currentUser)
                 if (!query.subscribed) {
                     // This is a new subscription, an initial patient set needs to be generated
                     newSubscription = true
@@ -137,21 +141,26 @@ class QueryService {
         if (representation.subscriptionFreq != null) {
             query.subscriptionFreq = representation.subscriptionFreq
         }
-
         query = save(query, currentUser)
 
         def result = toRepresentation(query)
 
         if (newSubscription) {
             // Create initial patient set when subscription is being enabled
-            // TODO TMT-686
-            // querySetService.createSetWithInstances(result, currentUser)
+            querySetService.createQuerySetWithQueryInstances(result)
         }
 
         result
     }
 
-    protected Query save(Query query, User currentUser) {
+    void delete(Long id, User currentUser) {
+        def query = getQueryByIdAndUsername(id, currentUser)
+        assert query instanceof Query
+        query.deleted = true
+        save(query, currentUser)
+    }
+
+    protected static Query save(Query query, User currentUser) throws InvalidArgumentsException {
         assert query instanceof Query
         if (currentUser.username != query.username) {
             throw new AccessDeniedException("Query does not belong to the current user.")
@@ -165,11 +174,14 @@ class QueryService {
         query
     }
 
-    void delete(Long id, User currentUser) {
-        def query = fetch(id, currentUser)
-        assert query instanceof Query
-        query.deleted = true
-        save(query, currentUser)
+    private static void validateSubscriptionEnabled(Boolean subscribed, SubscriptionFrequency subscriptionFreq)
+            throws InvalidArgumentsException {
+        boolean subscriptionFreqSpecified = subscriptionFreq != null
+        boolean subscriptionEnabled = Holders.config.getProperty('nl.thehyve.gb.backend.subscription.enabled', Boolean)
+        if (!subscriptionEnabled && (subscribed || subscriptionFreqSpecified)) {
+            throw new InvalidArgumentsException(
+                    "Subscription functionality is not enabled. Saving subscription data not supported.")
+        }
     }
 
 }

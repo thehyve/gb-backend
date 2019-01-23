@@ -64,6 +64,15 @@ Available API calls:
 - DELETE `/queries/<id>`
    - Deletes the user query with the given `<id>`.
 
+- POST `/queries/sets/scan`
+   - Scans for changes in entries of the stored queries and updates stored sets. Only for administrators.
+      Optional parameters:
+      - maxNumberOfSets - maximal number of sets to be returned
+
+- GET `/queries/<$queryId>/sets`
+   - Gets a list of query result change entries by `queryId`. History of data changes for specific query.
+
+
 All calls require an Authorization header.
 
 

@@ -12,4 +12,5 @@ package nl.thehyve.gb.backend.user
  */
 interface AuthContext {
     User getUser()
+    String getTokenString()
 }

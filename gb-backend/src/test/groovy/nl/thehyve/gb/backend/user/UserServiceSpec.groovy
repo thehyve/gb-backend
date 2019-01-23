@@ -26,7 +26,8 @@ class UserServiceSpec extends Specification {
 
     void "test keycloak principal parsing"() {
         List<GrantedAuthority> authorities = [
-                new SimpleGrantedAuthority('ROLE_1')
+                new SimpleGrantedAuthority('ROLE_1'),
+                new SimpleGrantedAuthority('ROLE_ADMIN')
         ]
 
         def principal = new TestingAuthenticationToken('test-sub', 'test-password', authorities)
@@ -38,6 +39,7 @@ class UserServiceSpec extends Specification {
         then:
         user.username == 'test-sub'
         user.realName == null
+        user.admin
 
     }
 
