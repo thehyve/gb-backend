@@ -20,7 +20,7 @@ import spock.lang.Specification
 
 import static nl.thehyve.gb.backend.QueryService.toRepresentation
 
-@Integration
+@Integration(applicationClass = Application)
 @Rollback
 class QuerySetServiceSpec extends Specification {
 
