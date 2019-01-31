@@ -57,19 +57,6 @@ class TransmartRestClient extends AbstractRestClient {
         }
     }
 
-    /**
-     * Request for patient with specified id
-     * POST /v2/patients/${id}
-     *
-     * @param id
-     * @return one patient object.
-     */
-    PatientRepresentation getPatientById(Long id) {
-        def uri = createURI("patients/${id}")
-
-        post(uri, null, PatientRepresentation.class)
-    }
-
     private URI createURI(String urlParts) {
         URI.create("$transmartServerUrl/$transmartApiVersion/$urlParts")
     }

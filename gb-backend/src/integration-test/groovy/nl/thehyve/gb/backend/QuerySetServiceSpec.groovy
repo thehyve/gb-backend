@@ -12,7 +12,6 @@ import grails.test.mixin.integration.Integration
 import nl.thehyve.gb.backend.client.TransmartRestClient
 import nl.thehyve.gb.backend.exception.InvalidRequestException
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
-import nl.thehyve.gb.backend.representation.PatientRepresentation
 import nl.thehyve.gb.backend.user.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.Rollback
@@ -131,11 +130,6 @@ class QuerySetServiceSpec extends Specification {
                                 ]
                         ]
                 )
-
-        testee.transmartRestClient.getPatientById(20L) >> new PatientRepresentation(20L, ["SUBJ_ID": "TEST:20"])
-        testee.transmartRestClient.getPatientById(21L) >> new PatientRepresentation(21L, ["SUBJ_ID": "TEST:21"])
-        testee.transmartRestClient.getPatientById(22L) >> new PatientRepresentation(22L, ["SUBJ_ID": "TEST:22"])
-        testee.transmartRestClient.getPatientById(30L) >> new PatientRepresentation(30L, ["SUBJ_ID": "TEST:30"])
     }
 
     private void mockQueryService(List<Query> queries) {

@@ -10,7 +10,6 @@ import grails.gorm.transactions.Transactional
 import grails.test.mixin.integration.Integration
 import nl.thehyve.gb.backend.client.TransmartRestClient
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
-import nl.thehyve.gb.backend.representation.PatientRepresentation
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.user.User
 import org.springframework.beans.factory.annotation.Autowired
@@ -81,12 +80,15 @@ class QueryServiceSpec extends Specification {
 
         then: 'two query set instances have been created'
         def querySets = getAllQuerySets()
-        def querySetElements = getAllQuerySetInstances()
+        def querySetInstances = getAllQuerySetInstances()
         querySets.size() == 2
-        querySetElements.size() == 4
+        querySetInstances.size() == 4
 
         assert querySets[0].setSize == 1
         assert querySets[1].setSize == 3
+
+        assert querySetInstances.findAll { it.querySet == querySets[0] }.objectId == ["TEST:21"]
+        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["TEST:20", "TEST:21", "TEST:22"]
     }
 
     @Transactional
@@ -137,9 +139,6 @@ class QueryServiceSpec extends Specification {
                                 ]
                         ]
                 )
-        queryService.querySetService.transmartRestClient.getPatientById(20L) >> new PatientRepresentation(20L, ["SUBJ_ID": "TEST:20"])
-        queryService.querySetService.transmartRestClient.getPatientById(21L) >> new PatientRepresentation(21L, ["SUBJ_ID": "TEST:21"])
-        queryService.querySetService.transmartRestClient.getPatientById(22L) >> new PatientRepresentation(22L, ["SUBJ_ID": "TEST:22"])
     }
 
     @Transactional
