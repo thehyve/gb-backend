@@ -31,8 +31,8 @@ class QueryServiceSpec extends Specification {
 
     void setup() {
         clearDatabase()
-        regularUser = new User('fake-user', 'Fake user', false)
-        adminUser = new User('admin', 'Administrator', true)
+        regularUser = new User('fake-user', 'Fake user', false, 'fake@email')
+        adminUser = new User('admin', 'Administrator', true, 'fake@email')
 
         querySetService.transmartRestClient = Mock(TransmartRestClient)
 

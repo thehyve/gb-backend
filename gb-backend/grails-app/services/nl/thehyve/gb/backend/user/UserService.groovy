@@ -43,11 +43,13 @@ class UserService {
         final boolean admin = authorities.remove(ROLE_ADMIN)
 
         String realName = null
+        String email = null
         if ((principal as Authentication).details instanceof SimpleKeycloakAccount) {
             def context = ((SimpleKeycloakAccount) (principal as Authentication).details).keycloakSecurityContext
             if (context?.token) {
                 AccessToken token = context.token
                 realName = token.name
+                email = token.email
             } else {
                 log.debug("No token in the security context. Giving up on getting email and name.")
             }
@@ -56,7 +58,7 @@ class UserService {
                     "Giving up on getting email and name.")
         }
 
-        new User(username, realName, admin)
+        new User(username, realName, admin, email)
     }
 
     User getUserFromUsername(String username) throws NoSuchResourceException {
@@ -65,6 +67,10 @@ class UserService {
             throw new NoSuchResourceException("No user with '${username}' username found.")
         }
         user
+    }
+
+    List<User> getUsersWithEmailSpecified() {
+        getUsers()?.findAll { it.email }
     }
 
     List<User> getUsers() {
@@ -79,7 +85,8 @@ class UserService {
         final boolean admin = roles.remove(ROLE_ADMIN)
         new User(keycloakUser.id,
                 "$keycloakUser.firstName $keycloakUser.lastName",
-                admin
+                admin,
+                keycloakUser.email
         )
     }
 

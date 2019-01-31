@@ -31,4 +31,5 @@ class Config {
     public static final String RESOURCE = 'transmart'
 
     public static final String PATH_QUERY = "/queries"
+    public static final String PATH_NOTIFICATIONS = "/notifications/notify"
 }

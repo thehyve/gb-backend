@@ -20,5 +20,7 @@ class UrlMappings {
         "/queries/sets/scan"(method: 'POST', controller: 'querySet', action: 'scan')
         "/queries/$queryId/sets"(method: 'GET', controller: 'querySet', action: 'getSetChangesByQueryId')
 
+        // email notifications
+        "/notifications/notify"(method: 'GET',controller: 'notificationsMail', action: 'notificationsNotify')
     }
 }
