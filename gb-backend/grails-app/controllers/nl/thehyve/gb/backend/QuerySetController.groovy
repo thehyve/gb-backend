@@ -9,7 +9,9 @@ package nl.thehyve.gb.backend
 import nl.thehyve.gb.backend.exception.InvalidArgumentsException
 import nl.thehyve.gb.backend.representation.QuerySetChangesRepresentation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.client.ResourceAccessException
 
 import static nl.thehyve.gb.backend.RequestUtils.checkForUnsupportedParams
 
@@ -28,6 +30,7 @@ class QuerySetController extends AbstractController {
      * Only available for administrators.
      *
      * @return number of sets that were updated, which is also a number of created querySets
+     *          or 503 (Service unavailable) if an error occurred during the communication with a rest client
      */
     def scan() {
         if (!authContext.user.admin) {
@@ -35,9 +38,14 @@ class QuerySetController extends AbstractController {
             respond error: "Only allowed for administrators."
             return
         }
-        Integer result = querySetService.scan()
-        response.status = 201
-        respond([numberOfUpdatedSets: result])
+        try {
+            Integer result = querySetService.scan()
+            response.status = 201
+            respond([numberOfUpdatedSets: result])
+        } catch (ResourceAccessException e) {
+            response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+            respond error: e.message
+        }
     }
 
     /**
@@ -47,6 +55,7 @@ class QuerySetController extends AbstractController {
      * @param maxNumberOfSets - max number of returned sets
      * @param queryId - id of the query
      * @return list of queryDiffs
+     *          400 (Bad request) or 500 (Internal server error) otherwise.
      */
     def getSetChangesByQueryId(@PathVariable('queryId') Long queryId) {
         try {

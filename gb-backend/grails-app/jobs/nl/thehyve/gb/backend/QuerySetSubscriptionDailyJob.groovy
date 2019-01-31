@@ -8,7 +8,7 @@ package nl.thehyve.gb.backend
 
 import grails.util.Holders
 import groovy.util.logging.Slf4j
-import org.quartz.impl.jdbcjobstore.InvalidConfigurationException
+import nl.thehyve.gb.backend.exception.InvalidConfigurationException
 
 /**
  * Quartz plugin job for user query subscription

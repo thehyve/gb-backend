@@ -7,10 +7,10 @@
 package nl.thehyve.gb.backend
 
 import nl.thehyve.gb.backend.exception.InvalidArgumentsException
-import nl.thehyve.gb.backend.exception.ServiceNotAvailableException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.mail.MailAuthenticationException
 import org.springframework.web.bind.annotation.RequestParam
 
 class NotificationsMailController extends AbstractController {
@@ -47,8 +47,13 @@ class NotificationsMailController extends AbstractController {
             if (!subscriptionFrequency) {
                 handleBadRequestResponse(new InvalidArgumentsException("Invalid frequency parameter: $frequency"))
             }
-            notificationsMailService.run(subscriptionFrequency)
-            response.status = HttpStatus.OK.value()
+            try {
+                notificationsMailService.run(subscriptionFrequency)
+                response.status = HttpStatus.OK.value()
+            } catch (MailAuthenticationException e) {
+                response.status = 401
+                respond error: e.message
+            }
         }
     }
 
