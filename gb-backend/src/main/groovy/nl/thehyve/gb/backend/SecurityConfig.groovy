@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2019  The Hyve B.V.
+ *  This file is distributed under the GNU Affero General Public License
+ *  (see accompanying file LICENSE).
+ */
+
 package nl.thehyve.gb.backend
 
 import groovy.util.logging.Slf4j
@@ -16,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy
+import org.springframework.web.client.RestTemplate
 
 @Slf4j
 @Configuration
@@ -40,6 +47,11 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     @Bean
     KeycloakConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver()
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate()
     }
 
     /**

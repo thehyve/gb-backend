@@ -32,6 +32,6 @@ enum SetType {
     }
 
     String value() {
-        type
+        type.toLowerCase()
     }
 }

@@ -4,16 +4,17 @@
  *  (see accompanying file LICENSE).
  */
 
-package nl.thehyve.gb.backend.user
+package nl.thehyve.gb.backend
 
 import groovy.transform.CompileStatic
-import groovy.transform.Immutable
 
+/**
+ * Data update change type
+ */
 @CompileStatic
-@Immutable
-class User {
-    String username
-    String realName
-    boolean admin
-    String email
+enum ChangeFlag {
+
+    ADDED,
+    REMOVED
+
 }

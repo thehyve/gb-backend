@@ -28,7 +28,7 @@ class BindingHelper {
         new ObjectMapper().setDateFormat(new SimpleDateFormat(DATE_TIME_FORMAT))
     }
 
-    static <T> T getRepresentationFromInputStream(InputStream inputStream, Class<T> type) {
+    static <T> T getRepresentationFromInputStream(InputStream inputStream, Class<T> type) throws BindingException {
         try {
             def input = (T) read(inputStream, type)
             if (input == null) {
@@ -48,7 +48,7 @@ class BindingHelper {
         objectMapper.writeValue(out, value)
     }
 
-    static <T> T read(InputStream content, Class<T> type) {
+    static <T> T read(InputStream content, Class<T> type) throws BindingException {
         if (content == null) {
             return null
         }
@@ -61,7 +61,7 @@ class BindingHelper {
         }
     }
 
-    static <T> T readFromString(String content, Class<T> type) {
+    static <T> T readFromString(String content, Class<T> type) throws BindingException {
         if (content == null || content.trim().empty) {
             return null
         }
@@ -74,7 +74,7 @@ class BindingHelper {
         }
     }
 
-    static <T> void validate(T object) {
+    static <T> void validate(T object) throws BindingException {
         if (object == null) {
             return
         }
