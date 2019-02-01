@@ -15,4 +15,5 @@ class User {
     String username
     String realName
     boolean admin
+    String email
 }

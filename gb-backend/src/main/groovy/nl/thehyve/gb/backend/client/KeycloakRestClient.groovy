@@ -67,7 +67,7 @@ class KeycloakRestClient extends AbstractRestClient {
     private List<UserRepresentation> getUsers(String accessToken) {
         def template = restTemplate
         template.interceptors.add(new BearerTokenInterceptor(accessToken))
-        ResponseEntity<List<UserRepresentation>> response = restTemplate
+        ResponseEntity<List<UserRepresentation>> response = template
                 .exchange("${keycloakServerUrl}/admin/realms/${realm}/users", HttpMethod.GET, null, userListRef)
 
         response.body
@@ -76,7 +76,7 @@ class KeycloakRestClient extends AbstractRestClient {
     private  Set<String> getRoles(String userId, String accessToken) {
         def template = restTemplate
         template.interceptors.add(new BearerTokenInterceptor(accessToken))
-        ResponseEntity<MappingsRepresentation> response = restTemplate.getForEntity(
+        ResponseEntity<MappingsRepresentation> response = template.getForEntity(
                 "$keycloakServerUrl/admin/realms/$realm/users/$userId/role-mappings",
                 MappingsRepresentation.class)
 

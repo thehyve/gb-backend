@@ -12,6 +12,7 @@ import nl.thehyve.gb.backend.representation.QueryUpdateRepresentation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.client.ResourceAccessException
 
 import static nl.thehyve.gb.backend.RequestUtils.checkForUnsupportedParams
 
@@ -64,7 +65,8 @@ class QueryController extends AbstractController {
      * POST /queries
      * Saves the user query in the body, which is of type {@link QueryRepresentation}.
      *
-     * @returns a representation of the saved query or 400 (Bad request) otherwise.
+     * @returns a representation of the saved query
+     *          400 (Bad request) or 503 (Service unavailable) otherwise.
      */
     def save() {
         def body = bindQuery(QueryRepresentation.class)
@@ -79,6 +81,9 @@ class QueryController extends AbstractController {
             BindingHelper.write(response.outputStream, query)
         } catch (InvalidArgumentsException e) {
             handleBadRequestResponse(e)
+        } catch (ResourceAccessException e) {
+            response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+            respond error: e.message
         }
     }
 
@@ -89,7 +94,7 @@ class QueryController extends AbstractController {
      *
      * @param id the identifier of the user query to update.
      * @returns status 204 and the updated query object, if it exists and is owned by the current user;
-     *      404 (Not Found) or 400 (Bad request) otherwise.
+     *      404 (Not Found), 400 (Bad request) or 503 (Service unavailable) otherwise.
      */
     def update(@PathVariable('id') Long id) {
         def body = bindQuery(QueryUpdateRepresentation.class)
@@ -107,7 +112,9 @@ class QueryController extends AbstractController {
         } catch (AccessDeniedException | NoSuchResourceException e) {
             response.status = 404
             respond error: "Query with id ${id} not found for user."
-            return
+        } catch (ResourceAccessException e) {
+            response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+            respond error: e.message
         }
     }
 
@@ -126,7 +133,6 @@ class QueryController extends AbstractController {
         } catch (AccessDeniedException | NoSuchResourceException e) {
             response.status = 404
             respond error: "Query with id ${id} not found for user."
-            return
         }
     }
 

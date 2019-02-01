@@ -3,7 +3,22 @@ nl.thehyve.gb.backend:
     subscription:
         enabled: true
     notifications:
+        # enable the notifications endpoint and the execution of daily and weekly notification jobs
         enabled: false
+        # max number of query sets returned in a subscription email
+        maxNumberOfSets: 20
+        # daily cron job trigger time in format: hh-mm
+        # hh: Hour, range: 0-23;
+        # mm: Minute, range: 0-59;
+        dailyJobTriggerTime: 0-0
+        # Client application name referred from email content
+        clientApplicationName: Glowing Bear
+
+---
+# Quartz plugin configuration - job for query subscription
+# Controls automatic startup of the Quartz scheduler during application bootstrap
+quartz:
+    autoStartup: true
 
 ---
 grails:
@@ -26,6 +41,12 @@ grails:
                 autoTimestamp: false
     databinding:
         convertEmptyStringsToNull: false
+    # email server configuration for notifications
+    mail:
+        host: localhost
+        'default':
+            from: noreply@thehyve.nl
+        port: 25
 
 info:
     app:

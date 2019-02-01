@@ -16,7 +16,8 @@ class BasicAuthAdapter implements AuthAdapter {
     private static HashMap<String, User> users = [:]
 
     BasicAuthAdapter() {
-        users.put('test-public-user-1', new User('test-public-user-1', 'test-public-user-1'))
+        users.put('test-public-user-1',
+                new User('test-public-user-1', 'test-public-user-1'))
         users.put('test-public-user-2', new User('test-public-user-2', 'test-public-user-2'))
         users.put('admin', new User('admin', 'admin'))
     }
