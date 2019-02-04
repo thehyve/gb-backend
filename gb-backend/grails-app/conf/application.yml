@@ -126,6 +126,12 @@ dataSource:
     username: gb
     password: gb
 
+keycloak:
+    # To send unauthorized response (401) instead of redirecting to keycloak login page
+    bearer-only: true
+    # Important for parsing roles correctly
+    use-resource-role-mappings: true
+
 environments:
     development:
         dataSource:
@@ -136,10 +142,8 @@ environments:
             api-version: v2
         keycloak:
             realm: dev
-            bearer-only: true
             auth-server-url: http://localhost:8080/auth
             resource: transmart
-            use-resource-role-mappings: true
         keycloakOffline:
             offlineToken: <offline_token>
 
@@ -155,10 +159,8 @@ environments:
             api-version: v2
         keycloak:
             realm: test
-            bearer-only: true
             auth-server-url: http://localhost:8080/auth
             resource: transmart
-            use-resource-role-mappings: true
     production:
         hibernate:
             show_sql: false
