@@ -46,6 +46,7 @@ class QueryServiceSpec extends Specification {
         def query1Representation = new QueryRepresentation()
         query1Representation.with {
             name = 'test query 1'
+            type = 'patient'
             queryConstraint = [type: 'true']
             bookmarked = true
             subscribed = true
@@ -56,6 +57,7 @@ class QueryServiceSpec extends Specification {
         def query2Representation = new QueryRepresentation()
         query2Representation.with {
             name = 'test query 2'
+            type = 'diagnosis'
             queryConstraint = [type: 'true']
             bookmarked = true
             subscribed = false
@@ -65,6 +67,7 @@ class QueryServiceSpec extends Specification {
         def query3Representation = new QueryRepresentation()
         query3Representation.with {
             name = 'test query 3'
+            type = 'sample1'
             queryConstraint = [type: 'negation', arg: [type: 'true']]
             bookmarked = false
             subscribed = true
@@ -88,7 +91,7 @@ class QueryServiceSpec extends Specification {
         assert querySets[1].setSize == 3
 
         assert querySetInstances.findAll { it.querySet == querySets[0] }.objectId == ["TEST:21"]
-        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["TEST:20", "TEST:21", "TEST:22"]
+        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["20", "21", "22"]
     }
 
     @Transactional
@@ -107,35 +110,32 @@ class QueryServiceSpec extends Specification {
     }
 
     private void mockTransmartRestClient(List<QueryRepresentation> queriesRepresentations) {
-        def dimensionName = SetType.PATIENT.value()
+        def dimensionName = 'patient'
 
         queryService.querySetService.transmartRestClient.getDimensionElements(
-                dimensionName, queriesRepresentations[0].queryConstraint as Map) >>
+                'patient', queriesRepresentations[0].queryConstraint as Map) >>
                 new DimensionElementsRepresentation(
                         name: dimensionName.toLowerCase(),
                         elements: [
                                 [
                                         id        : 21L,
-                                        subjectIds: ["SUBJ_ID": "TEST:21"]
+                                        subjectIds: ["SUBJ_ID": "TEST:21", "Invalid": "TEST:0"]
                                 ]
                         ]
                 )
         queryService.querySetService.transmartRestClient.getDimensionElements(
-                dimensionName, queriesRepresentations[2].queryConstraint as Map) >>
+                'sample1', queriesRepresentations[2].queryConstraint as Map) >>
                 new DimensionElementsRepresentation(
                         name: dimensionName.toLowerCase(),
                         elements: [
                                 [
-                                        id        : 20L,
-                                        subjectIds: ["SUBJ_ID": "TEST:20"]
+                                        id        : 20L
                                 ],
                                 [
-                                        id        : 21L,
-                                        subjectIds: ["SUBJ_ID": "TEST:21"]
+                                        id        : 21L
                                 ],
                                 [
-                                        id        : 22L,
-                                        subjectIds: ["SUBJ_ID": "TEST:22"]
+                                        id        : 22L
                                 ]
                         ]
                 )

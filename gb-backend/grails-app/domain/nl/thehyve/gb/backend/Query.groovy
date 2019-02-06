@@ -9,6 +9,7 @@ package nl.thehyve.gb.backend
 class Query {
 
     String name
+    String type
     String username
     String queryConstraint
     Boolean bookmarked = false
@@ -30,6 +31,7 @@ class Query {
 
     static constraints = {
         name maxSize: 1000
+        type maxSize: 255, nullable: false
         username maxSize: 50
         queryConstraint nullable: false
         bookmarked nullable: true

@@ -30,6 +30,7 @@ class QueryService {
         query.with {
             new QueryRepresentation(
                     id,
+                    type,
                     username,
                     name,
                     queryConstraint ? BindingHelper.readFromString(queryConstraint, Object) : null,
@@ -96,6 +97,7 @@ class QueryService {
         }
         query.with {
             name = representation.name
+            type = representation.type // TODO TMT-741 - validate query type, currently it can be any string
             queryConstraint = BindingHelper.writeAsString(representation.queryConstraint)
             bookmarked = representation.bookmarked ?: false
             subscribed = representation.subscribed ?: false
@@ -132,7 +134,7 @@ class QueryService {
                     throw new InvalidArgumentsException("Cannot subscribe to a query with empty constraints.")
                 }
                 if (!query.subscribed) {
-                    // This is a new subscription, an initial patient set needs to be generated
+                    // This is a new subscription, an initial set needs to be generated
                     newSubscription = true
                 }
             }
@@ -146,7 +148,7 @@ class QueryService {
         def result = toRepresentation(query)
 
         if (newSubscription) {
-            // Create initial patient set when subscription is being enabled
+            // Create initial set when subscription is being enabled
             querySetService.createQuerySetWithQueryInstances(result)
         }
 

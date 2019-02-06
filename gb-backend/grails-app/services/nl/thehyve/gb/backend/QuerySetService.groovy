@@ -44,7 +44,7 @@ class QuerySetService {
 
     SessionFactory sessionFactory
 
-    static final String SUBJ_ID_SOURCE = 'SUBJ_ID'
+    static final String PATIENT_DIMENSION_NAME = 'patient'
 
     Integer scan() {
         log.info 'Scanning for subscribed user queries updates ...'
@@ -82,22 +82,21 @@ class QuerySetService {
     }
 
     void createQuerySetWithQueryInstances(QueryRepresentation queryRepresentation) {
-        log.info "Create patient set for user query ${queryRepresentation.id}"
-        List<String> patientSubIds = getPatientsForQuery(queryRepresentation)
+        log.info "Create set of type ${queryRepresentation.type} for query ${queryRepresentation.id}"
+        List<String> setInstances = getSetInstancesForQuery(queryRepresentation)
         Query query = queryService.getQueryById(queryRepresentation.id)
         QuerySet querySet = new QuerySet(
                 query: query,
-                setType: SetType.PATIENT,
-                setSize: patientSubIds.size(),
+                setSize: setInstances.size(),
         )
         querySet.save(flush: true, failOnError: true)
 
         List<QuerySetInstance> instances = []
-        if (patientSubIds.size() > 0) {
-            for (patientSubId in patientSubIds) {
+        if (setInstances.size() > 0) {
+            for (instanceId in setInstances) {
                 instances.add(new QuerySetInstance(
                         querySet: querySet,
-                        objectId: patientSubId
+                        objectId: instanceId
                 ))
             }
             instances*.save(flush: true, failOnError: true)
@@ -108,20 +107,19 @@ class QuerySetService {
     protected boolean createQuerySetWithQueryDiffs(Query query) {
         Long queryId = query.id
         List<QuerySetInstance> previousQuerySetInstances = getQueryInstancesForLatestQuerySet(queryId)
-        List<String> previousPatientSubIds = previousQuerySetInstances.collect { it.objectId }
+        List<String> previousInstanceIds = previousQuerySetInstances.collect { it.objectId }
 
-        List<String> newPatientSubIds = getPatientsForQueryWithImpersonation(toRepresentation(query))
-        List<String> addedSubIds = newPatientSubIds - previousPatientSubIds
-        List<String> removedSubIds = previousPatientSubIds - newPatientSubIds
+        List<String> newSetInstanceIds = getSetInstancesWithImpersonation(toRepresentation(query))
+        List<String> addedSubIds = newSetInstanceIds - previousInstanceIds
+        List<String> removedSubIds = previousInstanceIds - newSetInstanceIds
 
         if (addedSubIds.size() > 0 || removedSubIds.size() > 0) {
             QuerySet querySet = new QuerySet()
             querySet.query = query
-            querySet.setSize = (Long) newPatientSubIds.size()
-            querySet.setType = SetType.PATIENT
+            querySet.setSize = (Long) newSetInstanceIds.size()
 
             List<QuerySetInstance> querySetInstances = []
-            querySetInstances.addAll(newPatientSubIds.collect {
+            querySetInstances.addAll(newSetInstanceIds.collect {
                 QuerySetInstance setInstance = new QuerySetInstance()
                 setInstance.querySet = querySet
                 setInstance.objectId = it
@@ -167,18 +165,16 @@ class QuerySetService {
         dimensionElements
     }
 
-    private List<String> getPatientsForQuery(QueryRepresentation query) {
-        def dimensionName = SetType.PATIENT.value() // TODO TMT-672
-        def newPatientDimensionElements =
-                getDimensionElements(dimensionName, query.queryConstraint as Map)?.elements
-        listPatientsSubIds(newPatientDimensionElements)
+    private List<String> getSetInstancesForQuery(QueryRepresentation query) {
+        def newDimensionElements =
+                getDimensionElements(query.type, query.queryConstraint as Map)?.elements
+        listSetInstanceIds(query.type, newDimensionElements)
     }
 
-    private List<String> getPatientsForQueryWithImpersonation(QueryRepresentation query) {
-        def dimensionName = SetType.PATIENT.value() // TODO TMT-672
-        def newPatientDimensionElements =
-                getDimensionElementsForUser(dimensionName, query.queryConstraint as Map, query.username)?.elements
-        listPatientsSubIds(newPatientDimensionElements)
+    private List<String> getSetInstancesWithImpersonation(QueryRepresentation query) {
+        def newDimensionElements =
+                getDimensionElementsForUser(query.type, query.queryConstraint as Map, query.username)?.elements
+        listSetInstanceIds(query.type, newDimensionElements)
     }
 
     private List<QuerySet> getQuerySets(Long queryId, User currentUser, Integer maxNumberOfSets) {
@@ -244,14 +240,25 @@ class QuerySetService {
                 .list() as List<QuerySetInstance>
     }
 
-    private static List<String> listPatientsSubIds(List<Map<String, Object>> newPatientDimensionElements) {
-        mapToPatientDimensionRepresentation(newPatientDimensionElements).collect { patientRepresentation ->
-            getPatientSubId(patientRepresentation)
+    private static List<String> listSetInstanceIds(String dimensionName, List<Map<String, Object>> newDimensionElements) {
+        if (dimensionName == PATIENT_DIMENSION_NAME) {
+            // it is a special case, where instead of using patient dimension id, a subject identifier is used
+            listPatientSetInstanceIds(newDimensionElements)
+        } else {
+            listSetInstanceIds(newDimensionElements)
         }
     }
 
-    private static String getPatientSubId(PatientRepresentation patient) {
-        return patient.subjectIds[SUBJ_ID_SOURCE]
+    private static List<String> listSetInstanceIds(List<Map<String, Object>> newDimensionElements) {
+        newDimensionElements.collect { Map<String, Object> element ->
+                    element['id'].toString()
+        }
+    }
+
+    private static List<String> listPatientSetInstanceIds(List<Map<String, Object>> newDimensionElements) {
+        mapToPatientDimensionRepresentation(newDimensionElements).collect { patientRepresentation ->
+            patientRepresentation.patientSubId
+        }
     }
 
     private static List<PatientRepresentation> mapToPatientDimensionRepresentation(
@@ -278,7 +285,6 @@ class QuerySetService {
         }
         new QuerySetChangesRepresentation(
                 set.id,
-                set.setType,
                 set.setSize,
                 set.createDate,
                 set.query.name,

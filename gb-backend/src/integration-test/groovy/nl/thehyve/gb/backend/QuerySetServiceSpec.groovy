@@ -84,16 +84,15 @@ class QuerySetServiceSpec extends Specification {
     }
 
     private void mockTransmartRestClient(List<Query> queries) {
-        def dimensionName = SetType.PATIENT.value()
         def queriesRepresentations = queries.collect{ toRepresentation(it) }
 
         testee.transmartRestClient.getDimensionElements(
-                dimensionName, queriesRepresentations[0].queryConstraint as Map, queries[0].username) >>
+                'patient', queriesRepresentations[0].queryConstraint as Map, queries[0].username) >>
                 new InvalidRequestException("Transmart returned error status")
         testee.transmartRestClient.getDimensionElements(
-                dimensionName, queriesRepresentations[1].queryConstraint as Map, queries[1].username) >>
+                'diagnosis', queriesRepresentations[1].queryConstraint as Map, queries[1].username) >>
                 new DimensionElementsRepresentation(
-                        name: dimensionName.toLowerCase(),
+                        name: 'diagnosis',
                         elements: [
                                 [
                                         id        : 20L,
@@ -110,9 +109,9 @@ class QuerySetServiceSpec extends Specification {
                         ]
                 )
         testee.transmartRestClient.getDimensionElements(
-                dimensionName, queriesRepresentations[2].queryConstraint as Map, queries[2].username) >>
+                'patient', queriesRepresentations[2].queryConstraint as Map, queries[2].username) >>
                 new DimensionElementsRepresentation(
-                        name: dimensionName.toLowerCase(),
+                        name: 'patient',
                         elements: [
                                 [
                                         id        : 30L,
@@ -120,9 +119,20 @@ class QuerySetServiceSpec extends Specification {
                                 ]
                         ]
                 )
+        testee.transmartRestClient.getDimensionElements(
+                'not_requested_dimension', queriesRepresentations[2].queryConstraint as Map, queries[2].username) >>
+                new DimensionElementsRepresentation(
+                        name: 'not_requested_dimension'.toLowerCase(),
+                        elements: [
+                                [
+                                        id        : 40L,
+                                        subjectIds: ["SUBJ_ID": "TEST:30"]
+                                ]
+                        ]
+                )
         testee.transmartRestClient.getDimensionElements(_, _) >>
                 new DimensionElementsRepresentation(
-                        name: dimensionName.toLowerCase(),
+                        name: 'some dimension',
                         elements: [
                                 [
                                         id        : 21L,
@@ -151,6 +161,7 @@ class QuerySetServiceSpec extends Specification {
         def query1_invalid = new Query()
         query1_invalid.with {
             name = 'fail on scan query'
+            type = 'patient'
             queryConstraint = '{"type": "concept", "conceptCode": "NON-EXISTENT"}'
             bookmarked = true
             subscribed = true
@@ -160,6 +171,7 @@ class QuerySetServiceSpec extends Specification {
         def query2 = new Query()
         query2.with {
             name = 'test query 1'
+            type = 'diagnosis'
             queryConstraint = '{"type": "true"}'
             bookmarked = true
             subscribed = true
@@ -169,6 +181,7 @@ class QuerySetServiceSpec extends Specification {
         def query3 = new Query()
         query3.with {
             name = 'test query 2'
+            type = 'patient'
             queryConstraint = '{"type": "negation", "arg": {"type": "true"}}'
             bookmarked = false
             subscribed = true

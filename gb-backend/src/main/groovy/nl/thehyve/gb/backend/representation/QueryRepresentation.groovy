@@ -23,6 +23,9 @@ class QueryRepresentation {
     Long id
 
     @Size(min = 1)
+    String type
+
+    @Size(min = 1)
     String username
 
     @Size(min = 1)
