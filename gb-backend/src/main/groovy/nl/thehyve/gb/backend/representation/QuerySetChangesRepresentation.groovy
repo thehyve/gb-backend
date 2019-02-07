@@ -27,6 +27,8 @@ class QuerySetChangesRepresentation {
 
     Long queryId
 
+    String queryType
+
     List<String> objectsAdded
 
     List<String> objectsRemoved

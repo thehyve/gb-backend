@@ -69,14 +69,14 @@ class QuerySetServiceSpec extends Specification {
 
         when: 'checking querySet changes for an email with daily updates'
         def resultForDailySubscription = testee
-                .getQueryChangeHistoryByUsernameAndFrequency(SubscriptionFrequency.DAILY, regularUser.username, 20)
+                .getQueriesChangeHistoriesByUsernameAndFrequency(regularUser.username, SubscriptionFrequency.DAILY,20)
 
         then: 'No elements found to be send in the daily email'
         resultForDailySubscription.size() == 1
 
         when: 'checking querySet changes for the email with weekly updates'
         def resultForWeeklySubscription = testee
-                .getQueryChangeHistoryByUsernameAndFrequency(SubscriptionFrequency.WEEKLY, regularUser.username, 20)
+                .getQueriesChangeHistoriesByUsernameAndFrequency(regularUser.username, SubscriptionFrequency.WEEKLY, 20)
 
         then: 'No elements found to be send in the weekly email'
         resultForWeeklySubscription.size() == 0
