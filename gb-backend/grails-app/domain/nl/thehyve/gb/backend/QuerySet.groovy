@@ -9,7 +9,6 @@ package nl.thehyve.gb.backend
 class QuerySet {
 
     Long id
-    SetType setType
     Long setSize
     Date createDate = new Date()
     Query query

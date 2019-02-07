@@ -39,14 +39,14 @@ class EmailGenerator {
      * @return The body of the email
      *
      */
-    static String getQuerySubscriptionUpdatesBody(List<QuerySetChangesRepresentation> patientSetsChanges, String clientAppName, Date reportDate) {
+    static String getQuerySubscriptionUpdatesBody(List<QuerySetChangesRepresentation> querySetsChanges, String clientAppName, Date reportDate) {
         String header = [
                 'Hello,',
                 '',
                 "You have subscribed to be notified to data updates for one or more queries that you have saved in the \"${clientAppName}\" application.",
                 "In this email you will find an overview of all data updates up until ${DATE_TIME_FORMAT.format(reportDate)}:",
         ].join(BR)
-        String table = updatesHtmlTable(patientSetsChanges)
+        String table = updatesHtmlTable(querySetsChanges)
         String footer = [
                 "You can login to ${clientAppName} to reload your queries and review the new data available.",
                 'Regards,',
@@ -56,13 +56,13 @@ class EmailGenerator {
         return header + P + table + P + footer
     }
 
-    protected static String updatesHtmlTable(List<QuerySetChangesRepresentation> patientSetsChanges) {
+    protected static String updatesHtmlTable(List<QuerySetChangesRepresentation> querySetsChanges) {
         String queryIdHeader = 'Your Query ID'
         String queryNameHeader = 'Your Query Name'
-        String addedSubjectHeader = 'Added subjects with ids'
-        String removedSubjectHeader = 'Removed subjects with ids'
+        String addedSubjectHeader = 'Added instances with ids'
+        String removedSubjectHeader = 'Removed instances with ids'
         String dateOfChangeHeader = 'Date of change'
-        List<String> tableRows = patientSetsChanges.collect { QuerySetChangesRepresentation change ->
+        List<String> tableRows = querySetsChanges.collect { QuerySetChangesRepresentation change ->
             "<tr><td>${change.queryId}</td><td>${change.queryName}</td><td>${change.objectsAdded.join(', ')}</td><td>${change.objectsRemoved.join(', ')}</td><td>${DATE_TIME_FORMAT.format(change.createDate)}</td></tr>".toString()
         }
         '<table cellpadding="10">' +

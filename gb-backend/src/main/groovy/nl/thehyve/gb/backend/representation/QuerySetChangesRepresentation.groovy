@@ -8,7 +8,6 @@ package nl.thehyve.gb.backend.representation
 
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
-import nl.thehyve.gb.backend.SetType
 
 /**
  * Representation of changes made in the query_set - added and removed objects,
@@ -19,8 +18,6 @@ import nl.thehyve.gb.backend.SetType
 class QuerySetChangesRepresentation {
 
     Long id
-
-    SetType setType
 
     Long setSize
 

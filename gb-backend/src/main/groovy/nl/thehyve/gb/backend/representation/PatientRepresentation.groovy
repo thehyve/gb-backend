@@ -17,6 +17,8 @@ import groovy.transform.CompileStatic
 @Canonical
 class PatientRepresentation {
 
+    static final String SUBJ_ID_SOURCE = 'SUBJ_ID'
+
     /**
      * A unique identifier for the patient. Cannot be null.
      */
@@ -27,5 +29,12 @@ class PatientRepresentation {
      * the value is the subject identifier.
      */
     Map<String, String> subjectIds
+
+    /**
+     * Subject identifier associated with a patient.
+     */
+    String getPatientSubId() {
+        subjectIds[SUBJ_ID_SOURCE]
+    }
 
 }

@@ -54,29 +54,30 @@ class NotificationsMailService {
         List<User> users = userService.getUsersWithEmailSpecified()
         Date reportDate = new Date()
         for (user in users) {
-            List<QuerySetChangesRepresentation> patientSetChanges =
-                    getPatientSetChangesRepresentation(frequency, user.username)
+            List<QuerySetChangesRepresentation> querySetChanges =
+                    getQuerySetChangesRepresentations(frequency, user.username)
 
-            if (patientSetChanges.size() > 0) {
+            if (querySetChanges.size() > 0) {
                 String emailSubject = EmailGenerator.getQuerySubscriptionUpdatesSubject(clientApplicationName, reportDate)
-                String emailBodyHtml = EmailGenerator.getQuerySubscriptionUpdatesBody(patientSetChanges, clientApplicationName, reportDate)
+                String emailBodyHtml = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientApplicationName, reportDate)
                 sendEmail(user.email, emailSubject, emailBodyHtml)
             }
         }
     }
 
     /**
-     * Fetches a list of patient sets with changes made comparing to a previous set related to the same query
+     * Fetches a list of sets for which there were instances added or removed
+     * comparing to a previous query set
      *
      * @param frequency
      * @param username
-     * @return A list of patient sets with changes
+     * @return A list of sets with changes
      */
-    private List<QuerySetChangesRepresentation> getPatientSetChangesRepresentation(SubscriptionFrequency frequency,
-                                                                                   String username) {
+    private List<QuerySetChangesRepresentation> getQuerySetChangesRepresentations(SubscriptionFrequency frequency,
+                                                                                  String username) {
         List<QuerySetChangesRepresentation> querySetsChanges =
                 querySetService.getQueryChangeHistoryByUsernameAndFrequency(frequency, username, maxNumberOfSets)
-        return querySetsChanges.findAll { it.setType == SetType.PATIENT }?.sort { it.queryId }
+        return querySetsChanges.sort { it.queryId }
     }
 
     /**

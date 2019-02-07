@@ -8,18 +8,9 @@ package nl.thehyve.gb.backend.client
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import nl.thehyve.gb.backend.client.utils.BearerTokenInterceptor
-import nl.thehyve.gb.backend.client.utils.ImpersonationInterceptor
-import nl.thehyve.gb.backend.client.utils.RestTemplateResponseErrorHandler
-import nl.thehyve.gb.backend.exception.InvalidRequestException
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
-import nl.thehyve.gb.backend.representation.PatientRepresentation
-import nl.thehyve.gb.backend.user.AuthContext
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.*
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestTemplate
 
 @Component
 @Slf4j
