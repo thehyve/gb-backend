@@ -54,30 +54,34 @@ class NotificationsMailService {
         List<User> users = userService.getUsersWithEmailSpecified()
         Date reportDate = new Date()
         for (user in users) {
-            List<QuerySetChangesRepresentation> querySetChanges =
-                    getQuerySetChangesRepresentations(frequency, user.username)
+            Map<String, List<QuerySetChangesRepresentation>> queryTypeToQuerySetsChanges =
+                    getQueryTypeToQuerySetChangesRepresentations(frequency, user.username)
 
-            if (querySetChanges.size() > 0) {
+            if (queryTypeToQuerySetsChanges.size() > 0) {
                 String emailSubject = EmailGenerator.getQuerySubscriptionUpdatesSubject(clientApplicationName, reportDate)
-                String emailBodyHtml = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientApplicationName, reportDate)
+                String emailBodyHtml = EmailGenerator.getQuerySubscriptionUpdatesBody(queryTypeToQuerySetsChanges,
+                        clientApplicationName,
+                        reportDate)
                 sendEmail(user.email, emailSubject, emailBodyHtml)
             }
         }
     }
 
     /**
-     * Fetches a list of sets for which there were instances added or removed
-     * comparing to a previous query set
+     * Fetches a list of sets for all queries user subscribed to with specific frequency
+     * for which there were instances added or removed comparing to a previous query set
+     * and groups it by query type
      *
      * @param frequency
      * @param username
-     * @return A list of sets with changes
+     * @return A map of query type to list of sets with changes
      */
-    private List<QuerySetChangesRepresentation> getQuerySetChangesRepresentations(SubscriptionFrequency frequency,
-                                                                                  String username) {
+    private Map<String, List<QuerySetChangesRepresentation>> getQueryTypeToQuerySetChangesRepresentations(
+            SubscriptionFrequency frequency,
+            String username) {
         List<QuerySetChangesRepresentation> querySetsChanges =
-                querySetService.getQueryChangeHistoryByUsernameAndFrequency(frequency, username, maxNumberOfSets)
-        return querySetsChanges.sort { it.queryId }
+                querySetService.getQueriesChangeHistoriesByUsernameAndFrequency(username,  frequency, maxNumberOfSets)
+        return querySetsChanges.sort { it.queryId }.groupBy { it.queryType }
     }
 
     /**

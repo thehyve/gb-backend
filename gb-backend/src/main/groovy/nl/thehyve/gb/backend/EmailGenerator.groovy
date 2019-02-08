@@ -29,42 +29,56 @@ class EmailGenerator {
     }
 
     /**
-     * Generates an email for specific user with data updates for a query the user is subscribed for.
+     * Generates an email for specific user with data updates for queries the user is subscribed for, grouped by query type.
      *
-     * The email contains a list of each query with changed results with:
+     * The email contains a list of each query, grouped by query type, with changed results, containing:
      * - a name of the query,
-     * - list of added and removed ids of objects that the query relates to
+     * - number of added and removed objects that the query relates to
      * - over what period the change was
      *
      * @return The body of the email
      *
      */
-    static String getQuerySubscriptionUpdatesBody(List<QuerySetChangesRepresentation> querySetsChanges, String clientAppName, Date reportDate) {
+    static String getQuerySubscriptionUpdatesBody(Map<String, List<QuerySetChangesRepresentation>> queryTypeToQuerySetsChanges,
+                                                  String clientAppName,
+                                                  Date reportDate) {
         String header = [
                 'Hello,',
                 '',
                 "You have subscribed to be notified to data updates for one or more queries that you have saved in the \"${clientAppName}\" application.",
                 "In this email you will find an overview of all data updates up until ${DATE_TIME_FORMAT.format(reportDate)}:",
         ].join(BR)
-        String table = updatesHtmlTable(querySetsChanges)
+        String updateInfo = htmlTablesGroupedByType(queryTypeToQuerySetsChanges)
         String footer = [
                 "You can login to ${clientAppName} to reload your queries and review the new data available.",
                 'Regards,',
                 '',
                 clientAppName,
         ].join(BR)
-        return header + P + table + P + footer
+        return header + P + updateInfo + P + footer
     }
 
-    protected static String updatesHtmlTable(List<QuerySetChangesRepresentation> querySetsChanges) {
+    protected static String htmlTablesGroupedByType(Map<String, List<QuerySetChangesRepresentation>> queryTypeToQuerySetsChanges) {
+        queryTypeToQuerySetsChanges.collect { type, querySetsChanges ->
+            String table = updatesHtmlTablePerType(querySetsChanges)
+            [
+                    "For subscription of type <b>${type}</b> there are the following updates:",
+                    table
+            ].join(BR)
+        }.join(BR)
+    }
+
+    protected static String updatesHtmlTablePerType(List<QuerySetChangesRepresentation> querySetsChanges) {
         String queryIdHeader = 'Your Query ID'
         String queryNameHeader = 'Your Query Name'
-        String addedSubjectHeader = 'Added instances with ids'
-        String removedSubjectHeader = 'Removed instances with ids'
+        String addedSubjectHeader = 'Number of added instances'
+        String removedSubjectHeader = 'Number of removed instances'
         String dateOfChangeHeader = 'Date of change'
+
         List<String> tableRows = querySetsChanges.collect { QuerySetChangesRepresentation change ->
-            "<tr><td>${change.queryId}</td><td>${change.queryName}</td><td>${change.objectsAdded.join(', ')}</td><td>${change.objectsRemoved.join(', ')}</td><td>${DATE_TIME_FORMAT.format(change.createDate)}</td></tr>".toString()
+            "<tr><td>${change.queryId}</td><td>${change.queryName}</td><td>${change.objectsAdded.size()}</td><td>${change.objectsRemoved.size()}</td><td>${DATE_TIME_FORMAT.format(change.createDate)}</td></tr>".toString()
         }
+
         '<table cellpadding="10">' +
                 '<tr>' + th(queryIdHeader) + th(queryNameHeader) + th(addedSubjectHeader) + th(removedSubjectHeader) + th(dateOfChangeHeader) + '</tr>' +
                 tableRows.join('') +

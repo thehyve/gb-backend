@@ -72,9 +72,9 @@ class QuerySetService {
                 .collect(Collectors.toList())
     }
 
-    List<QuerySetChangesRepresentation> getQueryChangeHistoryByUsernameAndFrequency(SubscriptionFrequency frequency,
-                                                                                    String username,
-                                                                                    Integer maxNumberOfSets) {
+    List<QuerySetChangesRepresentation> getQueriesChangeHistoriesByUsernameAndFrequency(String username,
+                                                                                        SubscriptionFrequency frequency,
+                                                                                        Integer maxNumberOfSets) {
         def querySets = getQuerySetsWithDiffsByUsernameAndFrequency(frequency, username, maxNumberOfSets)
         querySets.stream()
                 .map({ QuerySet querySet -> mapToSetChangesRepresentation(querySet) })
@@ -289,6 +289,7 @@ class QuerySetService {
                 set.createDate,
                 set.query.name,
                 set.query.id,
+                set.query.type,
                 objectsAdded,
                 objectsRemoved
         )

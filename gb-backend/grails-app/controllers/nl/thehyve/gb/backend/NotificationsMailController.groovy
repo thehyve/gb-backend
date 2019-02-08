@@ -41,7 +41,6 @@ class NotificationsMailController extends AbstractController {
         } else if (!authContext.user.admin) {
             response.status = 403
             respond error: "Only allowed for administrators."
-            return
         } else {
             SubscriptionFrequency subscriptionFrequency = frequency?.trim() ? SubscriptionFrequency.forName(frequency) : null
             if (!subscriptionFrequency) {
