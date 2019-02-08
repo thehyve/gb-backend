@@ -49,6 +49,7 @@ class TransmartRestClient extends AbstractRestClient {
     }
 
     private URI createURI(String urlParts) {
-        URI.create("$transmartServerUrl/$transmartApiVersion/$urlParts")
+        String validUrlParts = urlParts.replaceAll("\\s","%20")
+        URI.create("$transmartServerUrl/$transmartApiVersion/$validUrlParts")
     }
 }

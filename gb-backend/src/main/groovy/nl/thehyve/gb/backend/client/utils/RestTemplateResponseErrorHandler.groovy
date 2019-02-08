@@ -31,7 +31,8 @@ class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (httpResponse.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
             log.error "Client error occurred: ${httpResponse.getStatusCode()}"
             if (httpResponse.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException('not found exception')
+                throw new NotFoundException("Error occurred for a request: ${httpResponse.connection.url.toString()}. " +
+                        "Status: ${httpResponse.getStatusCode()}")
             }
         }
     }
