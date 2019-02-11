@@ -49,11 +49,6 @@ class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         return new KeycloakSpringBootConfigResolver()
     }
 
-    @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate()
-    }
-
     /**
      * Api request URI and their mapping roles and access are configured in this method.
      * This is method from spring security web configuration Override this method to configure

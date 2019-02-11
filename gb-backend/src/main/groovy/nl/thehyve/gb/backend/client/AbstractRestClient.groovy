@@ -24,9 +24,6 @@ import org.springframework.web.client.RestTemplate
 abstract class AbstractRestClient {
 
     @Autowired
-    RestTemplate restTemplate
-
-    @Autowired
     AuthContext authContext
 
     private static HttpHeaders getJsonHeaders() {
@@ -39,11 +36,13 @@ abstract class AbstractRestClient {
     protected <T> T postOnBehalfOf(String impersonatedUserName, URI uri, Map<String, Object> body, Class<T> type) {
         log.info "User impersonation! User ${authContext.user.username} " +
                 "sending request on behalf of user $impersonatedUserName, requestURL: $uri"
+        RestTemplate restTemplate = new RestTemplate()
         restTemplate.interceptors.add(new ImpersonationInterceptor(impersonatedUserName))
         post(uri, body, type)
     }
 
-    protected <T> T post(URI uri, Map<String, Object> body, Class<T> type) throws InvalidRequestException {
+    protected <T> T post(URI uri, Map<String, Object> body, Class<T> type,
+                         RestTemplate restTemplate = new RestTemplate()) throws InvalidRequestException {
         if (restTemplate.interceptors.size() < 1) {
             restTemplate.interceptors.add(new BearerTokenInterceptor(authContext.tokenString))
         }

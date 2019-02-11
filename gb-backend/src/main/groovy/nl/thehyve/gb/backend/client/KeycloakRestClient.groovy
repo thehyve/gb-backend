@@ -106,8 +106,7 @@ class KeycloakRestClient extends AbstractRestClient {
                 .build()
     }
 
-    @Override
-    RestTemplate getRestTemplate() {
+    private RestTemplate getRestTemplate() {
         def requestFactory = new HttpComponentsClientHttpRequestFactory()
         if (keycloakDisableTrustManager) {
             requestFactory.setHttpClient(httpClientWithoutCertificateChecking)
