@@ -46,7 +46,7 @@ class TransmartRestClient extends AbstractRestClient {
         if(impersonatedUserName?.trim()) {
             postOnBehalfOf(impersonatedUserName, uri, body, DimensionElementsRepresentation.class)
         } else {
-            post(uri, body, DimensionElementsRepresentation.class)
+            postAsCurrentUser(uri, body, DimensionElementsRepresentation.class)
         }
     }
 }

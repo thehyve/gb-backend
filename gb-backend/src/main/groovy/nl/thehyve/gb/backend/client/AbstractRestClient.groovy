@@ -54,8 +54,12 @@ abstract class AbstractRestClient {
         post(uri, body, type, getRestTemplateWithAuthorizationOnBehalfOf(impersonatedUserName))
     }
 
-    protected <T> T post(URI uri, Map<String, Object> body, Class<T> type,
-                         RestTemplate restTemplate = getRestTemplateWithAuthorizationToken(authContext.tokenString)) throws InvalidRequestException {
+    protected <T> T postAsCurrentUser(URI uri, Map<String, Object> body, Class<T> type) {
+        log.debug "Sending authorised post request from ${authContext.user.username} user."
+        post(uri, body, type, getRestTemplateWithAuthorizationToken(authContext.tokenString))
+    }
+
+    protected static <T> T post(URI uri, Map<String, Object> body, Class<T> type, RestTemplate restTemplate) throws InvalidRequestException {
 
         def httpEntity = new HttpEntity(body, jsonHeaders)
         ResponseEntity<T> response = restTemplate.exchange(uri,
