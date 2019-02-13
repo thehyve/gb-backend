@@ -51,17 +51,11 @@ abstract class AbstractRestClient {
     protected <T> T postOnBehalfOf(String impersonatedUserName, URI uri, Map<String, Object> body, Class<T> type) {
         log.info "User impersonation! User ${authContext.user.username} " +
                 "sending request on behalf of user $impersonatedUserName, requestURL: $uri"
-        RestTemplate restTemplate = getRestTemplate()
-        restTemplate.interceptors.add(new ImpersonationInterceptor(impersonatedUserName))
-        post(uri, body, type)
+        post(uri, body, type, getRestTemplateWithAuthorizationOnBehalfOf(impersonatedUserName))
     }
 
     protected <T> T post(URI uri, Map<String, Object> body, Class<T> type,
-                         RestTemplate restTemplate = getRestTemplate()) throws InvalidRequestException {
-        if (restTemplate.interceptors.size() < 1) {
-            restTemplate.interceptors.add(new BearerTokenInterceptor(authContext.tokenString))
-        }
-        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler())
+                         RestTemplate restTemplate = getRestTemplateWithAuthorizationToken(authContext.tokenString)) throws InvalidRequestException {
 
         def httpEntity = new HttpEntity(body, jsonHeaders)
         ResponseEntity<T> response = restTemplate.exchange(uri,
@@ -74,12 +68,26 @@ abstract class AbstractRestClient {
         return response.body
     }
 
+    protected RestTemplate getRestTemplateWithAuthorizationToken(String userToken) {
+        def restTemplate = getRestTemplate()
+        restTemplate.interceptors.add(new BearerTokenInterceptor(userToken))
+        return restTemplate
+    }
+
+    protected RestTemplate getRestTemplateWithAuthorizationOnBehalfOf(String impersonatedUserName) {
+        def restTemplate = getRestTemplate()
+        restTemplate.interceptors.add(new ImpersonationInterceptor(impersonatedUserName))
+        return restTemplate
+    }
+
     protected RestTemplate getRestTemplate() {
         def requestFactory = new HttpComponentsClientHttpRequestFactory()
         if (disableTrustManager) {
             requestFactory.setHttpClient(httpClientWithoutCertificateChecking)
         }
-        new RestTemplate(requestFactory)
+        def restTemplate = new RestTemplate(requestFactory)
+        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler())
+        return restTemplate
     }
 
     private static HttpClient getHttpClientWithoutCertificateChecking() {

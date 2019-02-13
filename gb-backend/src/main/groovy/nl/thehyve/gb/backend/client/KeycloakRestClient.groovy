@@ -9,7 +9,6 @@ package nl.thehyve.gb.backend.client
 import grails.util.Holders
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import nl.thehyve.gb.backend.client.utils.BearerTokenInterceptor
 import org.keycloak.representations.AccessTokenResponse
 import org.keycloak.representations.idm.ClientMappingsRepresentation
 import org.keycloak.representations.idm.MappingsRepresentation
@@ -20,6 +19,7 @@ import org.springframework.http.*
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.RestTemplate
 
 @Component
 @Slf4j
@@ -50,17 +50,15 @@ class KeycloakRestClient extends AbstractRestClient {
             new ParameterizedTypeReference<List<UserRepresentation>>() {}
 
     private List<UserRepresentation> getUsers(String accessToken) {
-        def template = restTemplate
-        template.interceptors.add(new BearerTokenInterceptor(accessToken))
+        RestTemplate template = getRestTemplateWithAuthorizationToken(accessToken)
         ResponseEntity<List<UserRepresentation>> response = template
                 .exchange("${keycloakServerUrl}/admin/realms/${realm}/users", HttpMethod.GET, null, userListRef)
 
         response.body
     }
 
-    private  Set<String> getRoles(String userId, String accessToken) {
-        def template = restTemplate
-        template.interceptors.add(new BearerTokenInterceptor(accessToken))
+    private Set<String> getRoles(String userId, String accessToken) {
+        RestTemplate template = getRestTemplateWithAuthorizationToken(accessToken)
         ResponseEntity<MappingsRepresentation> response = template.getForEntity(
                 "$keycloakServerUrl/admin/realms/$realm/users/$userId/role-mappings",
                 MappingsRepresentation.class)
