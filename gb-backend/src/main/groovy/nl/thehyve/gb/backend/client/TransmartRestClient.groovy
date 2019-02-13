@@ -6,6 +6,7 @@
 
 package nl.thehyve.gb.backend.client
 
+import com.google.common.net.UrlEscapers
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
@@ -35,7 +36,8 @@ class TransmartRestClient extends AbstractRestClient {
      * @return a list of all dimension elements that user (or impersonated user) has access to.
      */
     DimensionElementsRepresentation getDimensionElements(String dimensionName, Map constraint, String impersonatedUserName = '') {
-        URI uri = createURI("dimensions/${dimensionName}/elements")
+        String escapedDimensionName = UrlEscapers.urlPathSegmentEscaper().escape(dimensionName)
+        URI uri = URI.create("$transmartServerUrl/$transmartApiVersion/dimensions/${escapedDimensionName}/elements")
 
         Map<String, Object> body = new HashMap<>()
         body.put("dimensionName", dimensionName)
@@ -46,9 +48,5 @@ class TransmartRestClient extends AbstractRestClient {
         } else {
             post(uri, body, DimensionElementsRepresentation.class)
         }
-    }
-
-    private URI createURI(String urlParts) {
-        URI.create("$transmartServerUrl/$transmartApiVersion/$urlParts")
     }
 }

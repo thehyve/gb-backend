@@ -7,7 +7,7 @@
 package nl.thehyve.gb.backend.client.utils
 
 import groovy.util.logging.Slf4j
-import javassist.NotFoundException
+import nl.thehyve.gb.backend.exception.InvalidRequestException
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Component
@@ -31,8 +31,11 @@ class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         } else if (httpResponse.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
             log.error "Client error occurred: ${httpResponse.getStatusCode()}"
             if (httpResponse.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new NotFoundException('not found exception')
+                throw new InvalidRequestException("Error occurred for a request: ${httpResponse.connection.url.toString()}. " +
+                        "Status: ${httpResponse.getStatusCode()}")
             }
+        } else {
+            log.error("Http error occured: ${httpResponse.statusCode}")
         }
     }
 }

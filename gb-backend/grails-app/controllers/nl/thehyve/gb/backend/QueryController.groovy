@@ -79,10 +79,13 @@ class QueryController extends AbstractController {
             response.contentType = 'application/json'
             response.characterEncoding = 'utf-8'
             BindingHelper.write(response.outputStream, query)
-        } catch (InvalidArgumentsException e) {
+        } catch (InvalidArgumentsException | InvalidRequestException e) {
             handleBadRequestResponse(e)
         } catch (ResourceAccessException e) {
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+            respond error: e.message
+        } catch(Exception e) {
+            response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
             respond error: e.message
         }
     }
@@ -107,13 +110,16 @@ class QueryController extends AbstractController {
             response.contentType = 'application/json'
             response.characterEncoding = 'utf-8'
             BindingHelper.write(response.outputStream, query)
-        } catch (InvalidArgumentsException e) {
+        } catch (InvalidArgumentsException | InvalidRequestException e) {
             handleBadRequestResponse(e)
         } catch (AccessDeniedException | NoSuchResourceException e) {
             response.status = 404
             respond error: "Query with id ${id} not found for user."
         } catch (ResourceAccessException e) {
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
+            respond error: e.message
+        } catch(Exception e) {
+            response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
             respond error: e.message
         }
     }

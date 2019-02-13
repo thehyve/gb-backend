@@ -68,6 +68,8 @@ dependencies {
     compile "org.grails.plugins:mail:2.0.0"
     compile "org.grails.plugins:quartz:2.0.13"
 
+    compile "com.google.guava:guava:27.0.1-jre"
+
     testCompile "org.grails:grails-test-mixins:3.3.0"
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
 }
