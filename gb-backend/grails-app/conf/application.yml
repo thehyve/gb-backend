@@ -134,6 +134,7 @@ keycloak:
 
 environments:
     development:
+        disable-trust-manager: true # when true, SSL certificate checking is disabled. Do not use that in production!
         dataSource:
             dbCreate: update
             url: jdbc:postgresql://localhost:5432/gb_backend
