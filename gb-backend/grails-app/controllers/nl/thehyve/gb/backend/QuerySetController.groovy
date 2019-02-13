@@ -43,6 +43,7 @@ class QuerySetController extends AbstractController {
             response.status = 201
             respond([numberOfUpdatedSets: result])
         } catch (ResourceAccessException e) {
+            log.error("Failed to scan for changes in saved queries results", e)
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
             respond error: e.message
         }
@@ -66,8 +67,10 @@ class QuerySetController extends AbstractController {
                     authContext.user, maxNumberOfSets)
             respond([querySets: querySets])
         } catch (InvalidArgumentsException e) {
+            log.error("Failed to get changes for query with ${queryId} id because of invalid argument(s)", e)
             handleBadRequestResponse(e)
         } catch (Exception e) {
+            log.error("Failed to get changes for query with ${queryId} id", e)
             response.status = 500
             respond e.message
         }

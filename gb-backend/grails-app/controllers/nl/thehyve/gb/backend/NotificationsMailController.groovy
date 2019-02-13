@@ -50,6 +50,7 @@ class NotificationsMailController extends AbstractController {
                 notificationsMailService.run(subscriptionFrequency)
                 response.status = HttpStatus.OK.value()
             } catch (MailAuthenticationException e) {
+                log.error('Failed to send query subscriptions', e)
                 response.status = 401
                 respond error: e.message
             }
