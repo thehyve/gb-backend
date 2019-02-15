@@ -33,14 +33,14 @@ class Query {
         name maxSize: 1000
         type maxSize: 255, nullable: false
         username maxSize: 50
-        queryConstraint nullable: false
+        queryConstraint type: 'text', nullable: false
         bookmarked nullable: true
         subscribed nullable: true
         subscriptionFreq nullable: true
         deleted nullable: true
         createDate nullable: true
         updateDate nullable: true
-        queryBlob nullable: true
+        queryBlob type: 'text', nullable: true
     }
 
 }
