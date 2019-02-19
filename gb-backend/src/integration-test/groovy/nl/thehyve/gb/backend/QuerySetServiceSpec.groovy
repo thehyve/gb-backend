@@ -161,7 +161,7 @@ class QuerySetServiceSpec extends Specification {
         def query1_invalid = new Query()
         query1_invalid.with {
             name = 'fail on scan query'
-            type = 'patient'
+            subjectDimension = 'patient'
             queryConstraint = '{"type": "concept", "conceptCode": "NON-EXISTENT"}'
             bookmarked = true
             subscribed = true
@@ -171,7 +171,7 @@ class QuerySetServiceSpec extends Specification {
         def query2 = new Query()
         query2.with {
             name = 'test query 1'
-            type = 'diagnosis'
+            subjectDimension = 'diagnosis'
             queryConstraint = '{"type": "true"}'
             bookmarked = true
             subscribed = true
@@ -181,7 +181,7 @@ class QuerySetServiceSpec extends Specification {
         def query3 = new Query()
         query3.with {
             name = 'test query 2'
-            type = 'patient'
+            subjectDimension = 'patient'
             queryConstraint = '{"type": "negation", "arg": {"type": "true"}}'
             bookmarked = false
             subscribed = true

@@ -70,11 +70,11 @@ class NotificationsMailService {
     /**
      * Fetches a list of sets for all queries user subscribed to with specific frequency
      * for which there were instances added or removed comparing to a previous query set
-     * and groups it by query type
+     * and groups it by query type (subject dimension).
      *
      * @param frequency
      * @param username
-     * @return A map of query type to list of sets with changes
+     * @return A map of query subject dimension to list of sets with changes
      */
     private Map<String, List<QuerySetChangesRepresentation>> getQueryTypeToQuerySetChangesRepresentations(
             SubscriptionFrequency frequency,

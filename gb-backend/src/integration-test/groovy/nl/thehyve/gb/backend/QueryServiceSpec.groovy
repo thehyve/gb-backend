@@ -46,7 +46,7 @@ class QueryServiceSpec extends Specification {
         def query1Representation = new QueryRepresentation()
         query1Representation.with {
             name = 'test query 1'
-            type = 'patient'
+            subjectDimension = 'patient'
             queryConstraint = [type: 'true']
             bookmarked = true
             subscribed = true
@@ -57,7 +57,7 @@ class QueryServiceSpec extends Specification {
         def query2Representation = new QueryRepresentation()
         query2Representation.with {
             name = 'test query 2'
-            type = 'diagnosis'
+            subjectDimension = 'diagnosis'
             queryConstraint = [type: 'true']
             bookmarked = true
             subscribed = false
@@ -67,7 +67,7 @@ class QueryServiceSpec extends Specification {
         def query3Representation = new QueryRepresentation()
         query3Representation.with {
             name = 'test query 3'
-            type = 'sample1'
+            subjectDimension = 'sample1'
             queryConstraint = [type: 'negation', arg: [type: 'true']]
             bookmarked = false
             subscribed = true
