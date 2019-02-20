@@ -54,9 +54,11 @@ class QueryController extends AbstractController {
             response.characterEncoding = 'utf-8'
             BindingHelper.write(response.outputStream, query)
         } catch (AccessDeniedException | NoSuchResourceException e){
+            log.error("Failed to find query with id ${id}", e)
             response.status = 404
             respond error: "Query with id ${id} not found for user."
         } catch (InvalidArgumentsException e) {
+            log.error("Failed to read query with id ${id}", e)
             handleBadRequestResponse(e)
         }
     }
@@ -80,11 +82,14 @@ class QueryController extends AbstractController {
             response.characterEncoding = 'utf-8'
             BindingHelper.write(response.outputStream, query)
         } catch (InvalidArgumentsException | InvalidRequestException e) {
+            log.error('Failed to save query because of invalid request or its arguments', e)
             handleBadRequestResponse(e)
         } catch (ResourceAccessException e) {
+            log.error('Failed to save query because of the resource service unavailability', e)
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
             respond error: e.message
         } catch(Exception e) {
+            log.error('Failed to save query', e)
             response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
             respond error: e.message
         }
@@ -111,14 +116,18 @@ class QueryController extends AbstractController {
             response.characterEncoding = 'utf-8'
             BindingHelper.write(response.outputStream, query)
         } catch (InvalidArgumentsException | InvalidRequestException e) {
+            log.error('Failed to update query because of invalid request or its arguments', e)
             handleBadRequestResponse(e)
         } catch (AccessDeniedException | NoSuchResourceException e) {
+            log.error('Failed to update query because no resource or access denied.', e)
             response.status = 404
             respond error: "Query with id ${id} not found for user."
         } catch (ResourceAccessException e) {
+            log.error('Failed to update query because of the resource service unavailability', e)
             response.status = HttpStatus.SERVICE_UNAVAILABLE.value()
             respond error: e.message
         } catch(Exception e) {
+            log.error('Failed to update query', e)
             response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
             respond error: e.message
         }
@@ -137,6 +146,7 @@ class QueryController extends AbstractController {
             queryService.delete(id, authContext.user)
             response.status = HttpStatus.NO_CONTENT.value()
         } catch (AccessDeniedException | NoSuchResourceException e) {
+            log.error('Failed to delete query', e)
             response.status = 404
             respond error: "Query with id ${id} not found for user."
         }
@@ -154,6 +164,7 @@ class QueryController extends AbstractController {
         try {
             return BindingHelper.getRepresentationFromInputStream(request.inputStream, type)
         } catch (BindingException e) {
+            log.error("Failed to deserialise ${type}", e)
             return handleBadRequestResponse(e)
         }
     }
