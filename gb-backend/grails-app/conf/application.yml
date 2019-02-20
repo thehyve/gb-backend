@@ -123,8 +123,7 @@ dataSource:
     jmxExport: true
     driverClassName: org.postgresql.Driver
     dialect: org.hibernate.dialect.PostgreSQLDialect
-    username: gb
-    password: gb
+    url: jdbc:postgresql://localhost:5432/gb_backend
 
 keycloak:
     # To send unauthorized response (401) instead of redirecting to keycloak login page
@@ -138,6 +137,8 @@ environments:
         dataSource:
             dbCreate: update
             url: jdbc:postgresql://localhost:5432/gb_backend
+            username: gb
+            password: gb
         transmart:
             server-url: http://localhost:8081
             api-version: v2
@@ -167,7 +168,6 @@ environments:
             show_sql: false
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost:5432/gb_backend
             properties:
                 jmxEnabled: true
                 initialSize: 5
