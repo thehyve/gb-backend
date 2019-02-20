@@ -10,7 +10,7 @@ buildscript {
     }
 }
 
-version "0.1-SNAPSHOT"
+version "0.1.0-RC1"
 group "nl.thehyve.gb.backend"
 
 apply plugin:"eclipse"
@@ -78,7 +78,7 @@ publishing {
     repositories {
         maven {
             name 'nl.thehyve.nexus'
-            url 'https://repo.thehyve.nl/content/repositories/snapshots/'
+            url 'https://repo.thehyve.nl/content/repositories/releases/'
         }
     }
     publications {
