@@ -30,7 +30,7 @@ class QueryService {
         query.with {
             new QueryRepresentation(
                     id,
-                    type,
+                    subjectDimension,
                     username,
                     name,
                     queryConstraint ? BindingHelper.readFromString(queryConstraint, Object) : null,
@@ -97,7 +97,7 @@ class QueryService {
         }
         query.with {
             name = representation.name
-            type = representation.type // TODO TMT-741 - validate query type, currently it can be any string
+            subjectDimension = representation.subjectDimension // TODO TMT-741 - validate query subjectDimension, currently it can be any string
             queryConstraint = BindingHelper.writeAsString(representation.queryConstraint)
             bookmarked = representation.bookmarked ?: false
             subscribed = representation.subscribed ?: false

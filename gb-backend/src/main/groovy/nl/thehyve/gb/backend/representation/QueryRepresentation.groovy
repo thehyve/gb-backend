@@ -23,7 +23,7 @@ class QueryRepresentation {
     Long id
 
     @Size(min = 1)
-    String type
+    String subjectDimension
 
     @Size(min = 1)
     String username
