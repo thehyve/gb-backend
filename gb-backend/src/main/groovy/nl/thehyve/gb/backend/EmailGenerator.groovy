@@ -62,25 +62,25 @@ class EmailGenerator {
         queryTypeToQuerySetsChanges.collect { type, querySetsChanges ->
             String table = updatesHtmlTablePerType(querySetsChanges)
             [
-                    "For subscription of type <b>${type}</b> there are the following updates:",
+                    "Cohort changes (type <b>${type}</b>):",
                     table
             ].join(BR)
         }.join(BR)
     }
 
     protected static String updatesHtmlTablePerType(List<QuerySetChangesRepresentation> querySetsChanges) {
-        String queryIdHeader = 'Your Query ID'
-        String queryNameHeader = 'Your Query Name'
+        String queryNameHeader = 'Your Cohort Name'
+        String queryIdHeader = 'Your Cohort ID'
         String addedSubjectHeader = 'Number of added instances'
         String removedSubjectHeader = 'Number of removed instances'
         String dateOfChangeHeader = 'Date of change'
 
         List<String> tableRows = querySetsChanges.collect { QuerySetChangesRepresentation change ->
-            "<tr><td>${change.queryId}</td><td>${change.queryName}</td><td>${change.objectsAdded.size()}</td><td>${change.objectsRemoved.size()}</td><td>${DATE_TIME_FORMAT.format(change.createDate)}</td></tr>".toString()
+            "<tr><td>${change.queryName}</td><td>${change.queryId}</td><td>${change.objectsAdded.size()}</td><td>${change.objectsRemoved.size()}</td><td>${DATE_TIME_FORMAT.format(change.createDate)}</td></tr>".toString()
         }
 
         '<table cellpadding="10">' +
-                '<tr>' + th(queryIdHeader) + th(queryNameHeader) + th(addedSubjectHeader) + th(removedSubjectHeader) + th(dateOfChangeHeader) + '</tr>' +
+                '<tr>' + th(queryNameHeader) + th(queryIdHeader) + th(addedSubjectHeader) + th(removedSubjectHeader) + th(dateOfChangeHeader) + '</tr>' +
                 tableRows.join('') +
                 '</table>'
     }
