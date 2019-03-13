@@ -11,7 +11,7 @@ buildscript {
 }
 
 version "0.1-SNAPSHOT"
-group "nl.thehyve.gb.backend"
+group "nl.thehyve"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
