@@ -10,8 +10,8 @@ buildscript {
     }
 }
 
-version "0.1.0-RC1"
-group "nl.thehyve.gb.backend"
+version "0.2.0-RC1"
+group "nl.thehyve"
 
 apply plugin:"eclipse"
 apply plugin:"idea"
