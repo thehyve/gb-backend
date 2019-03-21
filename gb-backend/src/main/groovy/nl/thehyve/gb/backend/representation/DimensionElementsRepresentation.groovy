@@ -8,7 +8,6 @@ package nl.thehyve.gb.backend.representation
 
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
-import nl.thehyve.gb.backend.SubscriptionFrequency
 
 @Canonical
 @CompileStatic
@@ -22,6 +21,6 @@ class DimensionElementsRepresentation {
     /**
      * List of dimension elements with properties specific to a given dimension.
      */
-    List<Map<String, Object>> elements
+    List elements
 
 }

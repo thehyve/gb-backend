@@ -91,7 +91,7 @@ class QueryServiceSpec extends Specification {
         assert querySets[1].setSize == 3
 
         assert querySetInstances.findAll { it.querySet == querySets[0] }.objectId == ["TEST:21"]
-        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["20", "21", "22"]
+        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["s1", "s2", "s3"]
     }
 
     @Transactional
@@ -128,15 +128,9 @@ class QueryServiceSpec extends Specification {
                 new DimensionElementsRepresentation(
                         name: dimensionName.toLowerCase(),
                         elements: [
-                                [
-                                        id        : 20L
-                                ],
-                                [
-                                        id        : 21L
-                                ],
-                                [
-                                        id        : 22L
-                                ]
+                                "s1",
+                                "s2",
+                                "s3"
                         ]
                 )
     }
