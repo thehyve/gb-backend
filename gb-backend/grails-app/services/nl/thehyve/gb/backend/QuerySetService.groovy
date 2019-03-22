@@ -240,7 +240,7 @@ class QuerySetService {
                 .list() as List<QuerySetInstance>
     }
 
-    private static List<String> listSetInstanceIds(String dimensionName, List<Map<String, Object>> newDimensionElements) {
+    private static List<String> listSetInstanceIds(String dimensionName, List newDimensionElements) {
         if (dimensionName == PATIENT_DIMENSION_NAME) {
             // it is a special case, where instead of using patient dimension id, a subject identifier is used
             listPatientSetInstanceIds(newDimensionElements)
@@ -249,9 +249,13 @@ class QuerySetService {
         }
     }
 
-    private static List<String> listSetInstanceIds(List<Map<String, Object>> newDimensionElements) {
-        newDimensionElements.collect { Map<String, Object> element ->
-                    element['id'].toString()
+    private static List<String> listSetInstanceIds(List newDimensionElements) {
+        newDimensionElements.collect { element ->
+            if (element instanceof Map) {
+                element['id'].toString()
+            } else {
+                element.toString()
+            }
         }
     }
 
