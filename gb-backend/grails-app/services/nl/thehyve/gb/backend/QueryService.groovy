@@ -9,9 +9,12 @@ package nl.thehyve.gb.backend
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import groovy.transform.CompileStatic
+import nl.thehyve.gb.backend.client.TransmartRestClient
 import nl.thehyve.gb.backend.exception.AccessDeniedException
 import nl.thehyve.gb.backend.exception.InvalidArgumentsException
 import nl.thehyve.gb.backend.exception.NoSuchResourceException
+import nl.thehyve.gb.backend.representation.DimensionPropertiesRepresentation
+import nl.thehyve.gb.backend.representation.DimensionType
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.representation.QueryUpdateRepresentation
 import nl.thehyve.gb.backend.user.User
@@ -25,6 +28,9 @@ class QueryService {
 
     @Autowired
     QuerySetService querySetService
+
+    @Autowired
+    TransmartRestClient transmartRestClient
 
     static QueryRepresentation toRepresentation(Query query) {
         query.with {
@@ -90,6 +96,7 @@ class QueryService {
     QueryRepresentation create(QueryRepresentation representation, User currentUser) throws InvalidArgumentsException {
         def query = new Query(username: currentUser.username)
         validateSubscriptionEnabled(representation.subscribed, representation.subscriptionFreq)
+        validateSubjectDimensionSupported(representation.subjectDimension)
         if (representation.subscribed) {
             if (!representation.queryConstraint) {
                 throw new InvalidArgumentsException("Cannot subscribe to a query with empty constraints.")
@@ -97,7 +104,7 @@ class QueryService {
         }
         query.with {
             name = representation.name
-            subjectDimension = representation.subjectDimension // TODO TMT-741 - validate query subjectDimension, currently it can be any string
+            subjectDimension = representation.subjectDimension
             queryConstraint = BindingHelper.writeAsString(representation.queryConstraint)
             bookmarked = representation.bookmarked ?: false
             subscribed = representation.subscribed ?: false
@@ -183,6 +190,17 @@ class QueryService {
         if (!subscriptionEnabled && (subscribed || subscriptionFreqSpecified)) {
             throw new InvalidArgumentsException(
                     "Subscription functionality is not enabled. Saving subscription data not supported.")
+        }
+    }
+
+    private void validateSubjectDimensionSupported(String subjectDimension) throws InvalidArgumentsException {
+        def supportedDimensions = transmartRestClient.getDimensions()
+        def supportedSubjectDimensionNames = supportedDimensions ?
+                supportedDimensions.dimensions.findAll { DimensionPropertiesRepresentation dim ->
+                    dim.dimensionType == DimensionType.SUBJECT
+                }*.name : []
+        if (!supportedSubjectDimensionNames.contains(subjectDimension)) {
+            throw new InvalidArgumentsException("Subject dimension '${subjectDimension}' not supported.")
         }
     }
 
