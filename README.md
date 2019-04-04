@@ -29,8 +29,19 @@ gradle wrapper
 ./gradlew bootRun
 ```
 
-## Keycloak settings.
+## Keycloak settings
 
+### Identity server
+
+Keycloak settings have to be set for the application to work.
+They have to match with settings frontend glowing bear application uses.
+
+| yaml key | description |
+|-----------|-------------|
+| `keycloak.auth-server-url` | keycloak url that used. e.g. `https://keycloak.example.com/auth` |
+| `keycloak.realm` | keycloak realm. |
+| `keycloak.resource` | keycloak client id. |
+| `keycloakOffline.offlineToken` | keycloak offline token. |
 
 ### Offline token
 
@@ -55,12 +66,6 @@ Before using the command you have to substitute words in uppercase with proper o
 ```
 
 The value of the `refresh_token` field in the response is the offline token.
-
-The offline token could be set for the application with external configuration file using `keycloakOffline.offlineToken` key:
-
-```yaml
-keycloakOffline.offlineToken: <OFFLINE TOKEN>
-```
 
 ## API calls:
 
