@@ -29,6 +29,39 @@ gradle wrapper
 ./gradlew bootRun
 ```
 
+## Keycloak settings.
+
+
+### Offline token
+
+The application requires an offline token to be able to run batch jobs.
+
+Below is `curl` command to generate an offline token for `USERNAME` user.
+Before using the command you have to substitute words in uppercase with proper ones.
+
+**NOTE:** The offline user (`USERNAME` in example below) has to have following `realm-management` roles:
+
+- `impersonation` - to support running queries on behalf of queries owners.
+- `view-users` - to fetch list of users with the keycloak API. Used by the queries processing and sending emails.
+
+```bash
+    curl \
+      -d 'client_id=CLIENT_ID' \
+      -d 'username=USERNAME' \
+      -d 'password=PASSWORD' \
+      -d 'grant_type=password' \
+      -d 'scope=offline_access' \
+      'https://YOUR_KEYCLOAK_SERVER_HOST/auth/realms/YOUR_REALM/protocol/openid-connect/token'
+```
+
+The value of the `refresh_token` field in the response is the offline token.
+
+The offline token could be set for the application with external configuration file using `keycloakOffline.offlineToken` key:
+
+```yaml
+keycloakOffline.offlineToken: <OFFLINE TOKEN>
+```
+
 ## API calls:
 
 - GET `/queries`
