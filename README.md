@@ -29,9 +29,7 @@ gradle wrapper
 ./gradlew bootRun
 ```
 
-## Usage
-
-Available API calls:
+## API calls:
 
 - GET `/queries`
    - Gets a list of all queries for current user.
@@ -64,21 +62,22 @@ Available API calls:
 - DELETE `/queries/<id>`
    - Deletes the user query with the given `<id>`.
 
-- POST `/queries/sets/scan`
-   - Scans for changes in entries of the stored queries and updates stored sets. Only for administrators.
-      Optional parameters:
-      - `maxNumberOfSets` - maximal number of sets to be returned
-
 - GET `/queries/<$queryId>/sets`
    - Gets a list of query result change entries by `queryId`. History of data changes for specific query.
-
-- GET `/notifications/notify`
-   - Triggers sending of emails to users that subscribed for updates regarding queries they have created.
-     Only for administrators. This endpoint can be disabled in the configuration (see the configuration description below).
 
      Required parameters:
      - `frequency` - DAILY|WEEKLY - determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
 
+### Only for administrators.
+
+- POST `/queries/sets/scan`
+   - Scans for changes in entries of the stored queries and updates stored sets.
+      Optional parameters:
+      - `maxNumberOfSets` - maximal number of sets to be returned
+
+- GET `/notifications/notify`
+   - Triggers sending of emails to users that subscribed for updates regarding queries they have created.
+     This endpoint can be disabled in the configuration (see the configuration description below).
 
 All calls require an Authorization header.
 
