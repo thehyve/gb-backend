@@ -104,9 +104,6 @@ The value of the `refresh_token` field in the response is the offline token.
 - GET `/queries/<$queryId>/sets`
    - Gets a list of query result change entries by `queryId`. History of data changes for specific query.
 
-     Required parameters:
-     - `frequency` - DAILY|WEEKLY - determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
-
 ### Only for administrators.
 
 - POST `/queries/sets/scan`
@@ -117,6 +114,9 @@ The value of the `refresh_token` field in the response is the offline token.
 - GET `/notifications/notify`
    - Triggers sending of emails to users that subscribed for updates regarding queries they have created.
      This endpoint can be disabled in the configuration (see the configuration description below).
+
+     Required parameters:
+     - `frequency` - `DAILY`|`WEEKLY `- determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
 
 All calls require an Authorization header.
 
