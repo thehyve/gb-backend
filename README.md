@@ -29,9 +29,46 @@ gradle wrapper
 ./gradlew bootRun
 ```
 
-## Usage
+## Keycloak settings
 
-Available API calls:
+### Identity server
+
+Keycloak settings have to be set for the application to work.
+They have to match with settings frontend glowing bear application uses.
+
+| yaml key | description |
+|-----------|-------------|
+| `keycloak.auth-server-url` | keycloak url that used. e.g. `https://keycloak.example.com/auth` |
+| `keycloak.realm` | keycloak realm. |
+| `keycloak.resource` | keycloak client id. |
+| `keycloakOffline.offlineToken` | keycloak offline token. |
+
+### Offline token
+
+The application requires an offline token to be able to run batch jobs.
+
+Below is `curl` command to generate an offline token for `USERNAME` user.
+To get the token the user needs to have the role mapping for the realm-level: `"offline_access"`.
+Before using the command you have to substitute words in uppercase with proper ones.
+
+**NOTE:** The offline user (`USERNAME` in example below) has to have following `realm-management` roles:
+
+- `impersonation` - to support running queries on behalf of queries owners.
+- `view-users` - to fetch list of users with the keycloak API. Used by the queries processing and sending emails.
+
+```bash
+    curl \
+      -d 'client_id=CLIENT_ID' \
+      -d 'username=USERNAME' \
+      -d 'password=PASSWORD' \
+      -d 'grant_type=password' \
+      -d 'scope=offline_access' \
+      'https://YOUR_KEYCLOAK_SERVER_HOST/auth/realms/YOUR_REALM/protocol/openid-connect/token'
+```
+
+The value of the `refresh_token` field in the response is the offline token.
+
+## API calls:
 
 - GET `/queries`
    - Gets a list of all queries for current user.
@@ -64,21 +101,22 @@ Available API calls:
 - DELETE `/queries/<id>`
    - Deletes the user query with the given `<id>`.
 
-- POST `/queries/sets/scan`
-   - Scans for changes in entries of the stored queries and updates stored sets. Only for administrators.
-      Optional parameters:
-      - `maxNumberOfSets` - maximal number of sets to be returned
-
 - GET `/queries/<$queryId>/sets`
    - Gets a list of query result change entries by `queryId`. History of data changes for specific query.
 
+### Only for administrators.
+
+- POST `/queries/sets/scan`
+   - Scans for changes in entries of the stored queries and updates stored sets.
+      Optional parameters:
+      - `maxNumberOfSets` - maximal number of sets to be returned
+
 - GET `/notifications/notify`
    - Triggers sending of emails to users that subscribed for updates regarding queries they have created.
-     Only for administrators. This endpoint can be disabled in the configuration (see the configuration description below).
+     This endpoint can be disabled in the configuration (see the configuration description below).
 
      Required parameters:
-     - `frequency` - DAILY|WEEKLY - determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
-
+     - `frequency` - `DAILY`|`WEEKLY `- determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
 
 All calls require an Authorization header.
 
