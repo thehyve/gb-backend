@@ -48,6 +48,7 @@ They have to match with settings frontend glowing bear application uses.
 The application requires an offline token to be able to run batch jobs.
 
 Below is `curl` command to generate an offline token for `USERNAME` user.
+To get the token the user needs to have the role mapping for the realm-level: `"offline_access"`.
 Before using the command you have to substitute words in uppercase with proper ones.
 
 **NOTE:** The offline user (`USERNAME` in example below) has to have following `realm-management` roles:
