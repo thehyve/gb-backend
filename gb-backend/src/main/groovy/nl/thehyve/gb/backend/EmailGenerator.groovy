@@ -23,7 +23,7 @@ class EmailGenerator {
     static String getQuerySubscriptionUpdatesSubject(String clientAppName, Date reportDate) {
         [
                 clientAppName,
-                'Query subscription updates',
+                'Cohort subscription updates',
                 DATE_FORMAT.format(reportDate)
         ].join(SUBJECT_PARTS_SEPARATOR)
     }
@@ -31,7 +31,7 @@ class EmailGenerator {
     /**
      * Generates an email for specific user with data updates for queries the user is subscribed for, grouped by query type.
      *
-     * The email contains a list of each query, grouped by query type, with changed results, containing:
+     * The email contains a list of each query (cohort), grouped by query type, with changed results, containing:
      * - a name of the query,
      * - number of added and removed objects that the query relates to
      * - over what period the change was
@@ -45,12 +45,12 @@ class EmailGenerator {
         String header = [
                 'Hello,',
                 '',
-                "You have subscribed to be notified to data updates for one or more queries that you have saved in the \"${clientAppName}\" application.",
+                "You have subscribed to be notified to data updates for one or more cohorts that you have saved in the \"${clientAppName}\" application.",
                 "In this email you will find an overview of all data updates up until ${DATE_TIME_FORMAT.format(reportDate)}:",
         ].join(BR)
         String updateInfo = htmlTablesGroupedByType(queryTypeToQuerySetsChanges)
         String footer = [
-                "You can login to ${clientAppName} to reload your queries and review the new data available.",
+                "You can login to ${clientAppName} to reload your cohorts and review the new data available.",
                 'Regards,',
                 '',
                 clientAppName,
