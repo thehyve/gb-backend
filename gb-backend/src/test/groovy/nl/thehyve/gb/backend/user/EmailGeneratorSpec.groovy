@@ -21,7 +21,7 @@ class EmailGeneratorSpec extends Specification {
         String clientAppName = 'ABC'
         Date reportDate = DATE_FORMAT.parse('2018-10-03')
         expect:
-        EmailGenerator.getQuerySubscriptionUpdatesSubject(clientAppName, reportDate) == 'ABC - Query subscription updates - October 3 2018'
+        EmailGenerator.getQuerySubscriptionUpdatesSubject(clientAppName, reportDate) == 'ABC - Cohort subscription updates - October 3 2018'
     }
 
     def 'body of the query subscription updates'() {
@@ -59,7 +59,7 @@ class EmailGeneratorSpec extends Specification {
         ]
         Date reportDate = DATE_TIME_FORMAT.parse('2018-10-03 15:25')
         def expectedContent = 'Hello,<br /><br />' +
-                'You have subscribed to be notified to data updates for one or more queries that you have saved in the "ABC" application.' +
+                'You have subscribed to be notified to data updates for one or more cohorts that you have saved in the "ABC" application.' +
                 '<br />In this email you will find an overview of all data updates up until October 3 2018 15:25:' +
                 '<p />Cohort changes (type <b>Diagnosis</b>):' +
                 '<br /><table cellpadding="10"><tr>' +
@@ -72,7 +72,7 @@ class EmailGeneratorSpec extends Specification {
                 '<tr><td>first saved query</td><td>35</td><td>3</td><td>1</td><td>May 3 2017 13:30</td></tr>' +
                 '<tr><td>test query</td><td>50</td><td>6</td><td>2</td><td>August 16 2017 8:45</td></tr>' +
                 '</table>' +
-                '<p />You can login to ABC to reload your queries and review the new data available.' +
+                '<p />You can login to ABC to reload your cohorts and review the new data available.' +
                 '<br />Regards,<br /><br />ABC'
         when:
         def realContent = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientAppName, reportDate)
