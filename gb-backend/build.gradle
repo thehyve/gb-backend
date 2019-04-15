@@ -10,7 +10,7 @@ buildscript {
     }
 }
 
-version "0.3.0-RC1"
+version "0.4.0-RC1"
 group "nl.thehyve"
 
 apply plugin:"eclipse"
