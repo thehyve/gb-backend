@@ -7,10 +7,10 @@ services:
       POSTGRES_USER: gb
       POSTGRES_PASSWORD: gb
       POSTGRES_DB: gb_backend
-    ports:
-      - 5434:5432
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - db-network
   gb-backend:
     container_name: gb-backend
     image: thehyve/glowing-bear-backend
@@ -29,6 +29,12 @@ services:
     depends_on:
       - gb-backend-database
 #      - transmart-api-server
+    networks:
+      - db-network
 
 volumes:
   db-data:
+
+networks:
+  db-network:
+    driver: bridge
