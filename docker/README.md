@@ -1,4 +1,4 @@
-[![Docker Build Status](https://img.shields.io/docker/build/thehyve/glowing-bear-backend.svg)](https://hub.docker.com/r/thehyve/glowing-bear-backend)
+[![Docker Build Status](https://img.shields.io/docker/pulls/thehyve/glowing-bear-backend.svg)](https://hub.docker.com/r/thehyve/glowing-bear-backend)
 
 Docker image definitions and docker-compose profiles to run gb-backend and its database.
 `gb-backend` runs the application server through OpenJDK, and `gb-backend-database` its database through PostgreSQL.
