@@ -1,14 +1,14 @@
 #!/bin/sh
 set -e
 
-cat > "${APP_CONFIG_DIR}" <<EndOfMessage
+cat > "${APP_CONFIG_FILE}" <<EndOfMessage
 ---
 transmart:
   server-url: ${TRANSMART_API_SERVER_URL}
   api-version: v2
 
 keycloak:
-  auth-server-url: ${KEYCLOAK_SERVER_URL}
+  auth-server-url: ${KEYCLOAK_SERVER_URL}/auth
   realm: ${KEYCLOAK_REALM}
   resource: ${KEYCLOAK_CLIENT_ID}
 
@@ -30,5 +30,5 @@ exec java -jar -server \
         "-Dmail.mime.decodeparameters=true" \
         "-Djava.security.egd=file:///dev/urandom" \
         "-Dserver.port=${APP_PORT}" \
-        "-Dspring.config.location=/${APP_CONFIG_DIR}" \
+        "-Dspring.config.location=${APP_CONFIG_FILE}" \
     "gb-backend-${GB_BACKEND_VERSION}.war"
