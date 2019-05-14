@@ -13,7 +13,7 @@ docker build -t thehyve/glowing-bear-backend . --no-cache
 Run the full stack with:
 ```bash
 export TRANSMART_API_SERVER_URL=https://transmart.example.com
-export KEYCLOAK_SERVER_URL=https://keycloak.example.com/auth
+export KEYCLOAK_SERVER_URL=https://keycloak.example.com
 export KEYCLOAK_REALM=transmart-dev
 docker-compose -f docker-compose.yml up
 ```
