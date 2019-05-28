@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
 ENV APP_PORT 8083
-ENV GB_BACKEND_VERSION 0.4.0-RC1
+ENV GB_BACKEND_VERSION 1.0.0
 ENV GB_BACKEND_WAR_URL https://repo.thehyve.nl/content/repositories/releases/nl/thehyve/gb-backend/${GB_BACKEND_VERSION}/gb-backend-${GB_BACKEND_VERSION}.war
 
 # non-overridable environment variables
