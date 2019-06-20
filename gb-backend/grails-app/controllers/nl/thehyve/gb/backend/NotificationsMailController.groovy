@@ -44,7 +44,7 @@ class NotificationsMailController extends AbstractController {
         } else {
             SubscriptionFrequency subscriptionFrequency = frequency?.trim() ? SubscriptionFrequency.forName(frequency) : null
             if (!subscriptionFrequency) {
-                handleBadRequestResponse(new InvalidArgumentsException("Invalid frequency parameter: $frequency"))
+                return handleBadRequestResponse(new InvalidArgumentsException("Invalid frequency parameter: $frequency"))
             }
             try {
                 notificationsMailService.run(subscriptionFrequency)
