@@ -9,7 +9,7 @@ apply plugin: 'groovy'
 apply plugin: 'java'
 
 ext {
-    jacksonVersion = '2.9.8'
+    jacksonVersion = '2.9.9'
 }
 
 repositories {
