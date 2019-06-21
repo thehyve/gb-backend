@@ -10,6 +10,7 @@ import grails.artefact.Controller
 import grails.converters.JSON
 import grails.web.mime.MimeType
 import nl.thehyve.gb.backend.exception.InvalidRequestException
+import nl.thehyve.gb.backend.exception.ServiceNotAvailableException
 import nl.thehyve.gb.backend.user.AuthContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -35,13 +36,17 @@ abstract class AbstractController implements Controller {
     }
 
     /**
-     * Creates well-formatted error response body with HttpStatus.BAD_REQUEST status
+     * Creates well-formatted error response body with HttpStatus.BAD_REQUEST status.
+     *
+     * Some Grails magic makes this the default error handler for subclasses of this abstract controller.
+     *
      * @param exception that occurred
      * @return code 400
      */
-    protected handleBadRequestResponse(Exception e) {
+    public handleBadRequestResponse(Exception e) {
+        def status = e instanceof ServiceNotAvailableException ? HttpStatus.SERVICE_UNAVAILABLE.value() : HttpStatus.BAD_REQUEST.value()
         def error = [
-                httpStatus: HttpStatus.BAD_REQUEST.value(),
+                httpStatus: status,
                 message   : e.message,
                 type      : e.class.simpleName,
         ] as Map<String, Object>
@@ -51,7 +56,7 @@ abstract class AbstractController implements Controller {
                     .collect { [propertyPath: it.propertyPath.toString(), message: it.message] }
         }
 
-        response.status = HttpStatus.BAD_REQUEST.value()
+        response.status = status
         render error as JSON
         return null
     }

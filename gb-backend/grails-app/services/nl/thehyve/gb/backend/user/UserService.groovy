@@ -75,6 +75,9 @@ class UserService {
 
     List<User> getUsers() {
         List<UserRepresentation> keycloakUsers = keycloakRestClient.getUsersByOfflineToken()
+        if (keycloakUsers == null) {
+            return null
+        }
         keycloakUsers.collect { UserRepresentation keycloakUser ->
             Set<String> roles = keycloakRestClient.getRolesForUserByOfflineToken(keycloakUser.id)
             createUser(keycloakUser, roles)

@@ -1,5 +1,6 @@
 # gb-backend
 [![Build Status](https://travis-ci.org/thehyve/gb-backend.svg?branch=master)](https://travis-ci.org/thehyve/gb-backend)
+[![Known vulnerabilities](https://snyk.io//test/github/thehyve/gb-backend/badge.svg?targetFile=gb-backend/build.gradle)](https://snyk.io//test/github/thehyve/gb-backend?targetFile=gb-backend/build.gradle)
 
 Backend application for Glowing Bear UI, supporting user queries management, subscription and notification functionality.
 
