@@ -11,16 +11,8 @@ import groovy.transform.CompileStatic
 
 @Canonical
 @CompileStatic
-class DimensionElementsRepresentation {
+class DimensionsRepresentation {
 
-    /**
-     * Dimension name
-     */
-    String name
-
-    /**
-     * List of dimension elements with properties specific to a given dimension.
-     */
-    List elements
+    List<DimensionPropertiesRepresentation> dimensions
 
 }

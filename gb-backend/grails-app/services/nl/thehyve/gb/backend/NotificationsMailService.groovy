@@ -13,7 +13,6 @@ import nl.thehyve.gb.backend.representation.QuerySetChangesRepresentation
 import nl.thehyve.gb.backend.user.User
 import nl.thehyve.gb.backend.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 
 /**
  * Generates and sends a daily or weekly subscription email for each user
@@ -28,12 +27,7 @@ import org.springframework.beans.factory.annotation.Value
 @CompileStatic
 class NotificationsMailService {
 
-    @Value('${nl.thehyve.gb.backend.notifications.maxNumberOfSets}')
-    Integer maxNumberOfSets
-
-    @Value('${nl.thehyve.gb.backend.clientApplicationName}')
-    String clientApplicationName
-
+    @Autowired
     MailService mailService
 
     @Autowired
@@ -41,6 +35,9 @@ class NotificationsMailService {
 
     @Autowired
     QuerySetService querySetService
+
+    String clientApplicationName
+    Integer maxNumberOfSets
 
     /**
      * Creates and sends a daily or weekly email for each subscribed user having an email specified.
@@ -51,6 +48,9 @@ class NotificationsMailService {
      *
      */
     def run(SubscriptionFrequency frequency) {
+        assert querySetService
+        assert maxNumberOfSets
+
         List<User> users = userService.getUsersWithEmailSpecified()
         Date reportDate = new Date()
         for (user in users) {
@@ -70,11 +70,11 @@ class NotificationsMailService {
     /**
      * Fetches a list of sets for all queries user subscribed to with specific frequency
      * for which there were instances added or removed comparing to a previous query set
-     * and groups it by query type
+     * and groups it by query type (subject dimension).
      *
      * @param frequency
      * @param username
-     * @return A map of query type to list of sets with changes
+     * @return A map of query subject dimension to list of sets with changes
      */
     private Map<String, List<QuerySetChangesRepresentation>> getQueryTypeToQuerySetChangesRepresentations(
             SubscriptionFrequency frequency,

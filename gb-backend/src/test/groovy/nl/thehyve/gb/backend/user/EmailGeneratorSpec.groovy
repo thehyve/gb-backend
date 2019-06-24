@@ -21,28 +21,28 @@ class EmailGeneratorSpec extends Specification {
         String clientAppName = 'ABC'
         Date reportDate = DATE_FORMAT.parse('2018-10-03')
         expect:
-        EmailGenerator.getQuerySubscriptionUpdatesSubject(clientAppName, reportDate) == 'ABC - Query subscription updates - October 3 2018'
+        EmailGenerator.getQuerySubscriptionUpdatesSubject(clientAppName, reportDate) == 'ABC - Cohort subscription updates - October 3 2018'
     }
 
     def 'body of the query subscription updates'() {
         String clientAppName = 'ABC'
         Map<String, List<QuerySetChangesRepresentation>> querySetChanges = [
-                diagnosis: [
+                Diagnosis: [
                         new QuerySetChangesRepresentation(
                                 queryId: 36,
                                 queryName: 'test diagnosis query',
                                 createDate: DATE_TIME_FORMAT.parse('2019-02-07 09:59'),
-                                queryType: 'diagnosis',
+                                queryType: 'Diagnosis',
                                 objectsAdded: ['d1', 'd2', 'd3'],
                                 objectsRemoved: []
                         )
                 ],
-                patient  : [
+                Patient  : [
                         new QuerySetChangesRepresentation(
                                 queryId: 35,
                                 queryName: 'first saved query',
                                 createDate: DATE_TIME_FORMAT.parse('2017-05-03 13:30'),
-                                queryType: 'patient',
+                                queryType: 'Patient',
                                 objectsAdded: ['subj1', 'subj2', 'subj3'],
                                 objectsRemoved: ['subj10'],
 
@@ -51,7 +51,7 @@ class EmailGeneratorSpec extends Specification {
                                 queryId: 50,
                                 queryName: 'test query',
                                 createDate: DATE_TIME_FORMAT.parse('2017-08-16 8:45'),
-                                queryType: 'diagnosis',
+                                queryType: 'Diagnosis',
                                 objectsAdded: ['subj100', 'subj200', 'subj300', 'subj400', 'subj500', 'subj600'],
                                 objectsRemoved: ['subj101', 'subj201'],
                         ),
@@ -59,20 +59,20 @@ class EmailGeneratorSpec extends Specification {
         ]
         Date reportDate = DATE_TIME_FORMAT.parse('2018-10-03 15:25')
         def expectedContent = 'Hello,<br /><br />' +
-                'You have subscribed to be notified to data updates for one or more queries that you have saved in the "ABC" application.' +
+                'You have subscribed to be notified to data updates for one or more cohorts that you have saved in the "ABC" application.' +
                 '<br />In this email you will find an overview of all data updates up until October 3 2018 15:25:' +
-                '<p />For subscription of type <b>diagnosis</b> there are the following updates:' +
+                '<p />Cohort changes (type <b>Diagnosis</b>):' +
                 '<br /><table cellpadding="10"><tr>' +
-                '<th align="left">Your Query ID</th><th align="left">Your Query Name</th><th align="left">Number of added instances</th><th align="left">Number of removed instances</th><th align="left">Date of change</th></tr>' +
-                '<tr><td>36</td><td>test diagnosis query</td><td>3</td><td>0</td><td>February 7 2019 9:59</td></tr>' +
+                '<th align="left">Your Cohort Name</th><th align="left">Your Cohort ID</th><th align="left">Number of added instances</th><th align="left">Number of removed instances</th><th align="left">Date of change</th></tr>' +
+                '<tr><td>test diagnosis query</td><td>36</td><td>3</td><td>0</td><td>February 7 2019 9:59</td></tr>' +
                 '</table>' +
-                '<br />For subscription of type <b>patient</b> there are the following updates:' +
+                '<br />Cohort changes (type <b>Patient</b>):' +
                 '<br /><table cellpadding="10">' +
-                '<tr><th align="left">Your Query ID</th><th align="left">Your Query Name</th><th align="left">Number of added instances</th><th align="left">Number of removed instances</th><th align="left">Date of change</th></tr>' +
-                '<tr><td>35</td><td>first saved query</td><td>3</td><td>1</td><td>May 3 2017 13:30</td></tr>' +
-                '<tr><td>50</td><td>test query</td><td>6</td><td>2</td><td>August 16 2017 8:45</td></tr>' +
+                '<tr><th align="left">Your Cohort Name</th><th align="left">Your Cohort ID</th><th align="left">Number of added instances</th><th align="left">Number of removed instances</th><th align="left">Date of change</th></tr>' +
+                '<tr><td>first saved query</td><td>35</td><td>3</td><td>1</td><td>May 3 2017 13:30</td></tr>' +
+                '<tr><td>test query</td><td>50</td><td>6</td><td>2</td><td>August 16 2017 8:45</td></tr>' +
                 '</table>' +
-                '<p />You can login to ABC to reload your queries and review the new data available.' +
+                '<p />You can login to ABC to reload your cohorts and review the new data available.' +
                 '<br />Regards,<br /><br />ABC'
         when:
         def realContent = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientAppName, reportDate)

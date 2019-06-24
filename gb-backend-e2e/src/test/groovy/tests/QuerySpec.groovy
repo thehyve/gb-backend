@@ -149,7 +149,7 @@ class QuerySpec extends RESTSpec {
                 statusCode: 201,
                 body      : [
                         name             : 'test query',
-                        type             : 'patient',
+                        subjectDimension : 'patient',
                         queryConstraint  : [type: 'true'],// TODO replace with TrueConstraint representation from tm-core-api
                         bookmarked       : true,
                         subscribed       : false,

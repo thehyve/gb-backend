@@ -82,7 +82,7 @@ class QuerySetService {
     }
 
     void createQuerySetWithQueryInstances(QueryRepresentation queryRepresentation) {
-        log.info "Create set of type ${queryRepresentation.type} for query ${queryRepresentation.id}"
+        log.info "Create set of subjectDimension ${queryRepresentation.subjectDimension} for query ${queryRepresentation.id}"
         List<String> setInstances = getSetInstancesForQuery(queryRepresentation)
         Query query = queryService.getQueryById(queryRepresentation.id)
         QuerySet querySet = new QuerySet(
@@ -167,14 +167,14 @@ class QuerySetService {
 
     private List<String> getSetInstancesForQuery(QueryRepresentation query) {
         def newDimensionElements =
-                getDimensionElements(query.type, query.queryConstraint as Map)?.elements
-        listSetInstanceIds(query.type, newDimensionElements)
+                getDimensionElements(query.subjectDimension, query.queryConstraint as Map)?.elements
+        listSetInstanceIds(query.subjectDimension, newDimensionElements)
     }
 
     private List<String> getSetInstancesWithImpersonation(QueryRepresentation query) {
         def newDimensionElements =
-                getDimensionElementsForUser(query.type, query.queryConstraint as Map, query.username)?.elements
-        listSetInstanceIds(query.type, newDimensionElements)
+                getDimensionElementsForUser(query.subjectDimension, query.queryConstraint as Map, query.username)?.elements
+        listSetInstanceIds(query.subjectDimension, newDimensionElements)
     }
 
     private List<QuerySet> getQuerySets(Long queryId, User currentUser, Integer maxNumberOfSets) {
@@ -240,7 +240,7 @@ class QuerySetService {
                 .list() as List<QuerySetInstance>
     }
 
-    private static List<String> listSetInstanceIds(String dimensionName, List<Map<String, Object>> newDimensionElements) {
+    private static List<String> listSetInstanceIds(String dimensionName, List newDimensionElements) {
         if (dimensionName == PATIENT_DIMENSION_NAME) {
             // it is a special case, where instead of using patient dimension id, a subject identifier is used
             listPatientSetInstanceIds(newDimensionElements)
@@ -249,9 +249,13 @@ class QuerySetService {
         }
     }
 
-    private static List<String> listSetInstanceIds(List<Map<String, Object>> newDimensionElements) {
-        newDimensionElements.collect { Map<String, Object> element ->
-                    element['id'].toString()
+    private static List<String> listSetInstanceIds(List newDimensionElements) {
+        newDimensionElements.collect { element ->
+            if (element instanceof Map) {
+                element['id'].toString()
+            } else {
+                element.toString()
+            }
         }
     }
 
@@ -289,7 +293,7 @@ class QuerySetService {
                 set.createDate,
                 set.query.name,
                 set.query.id,
-                set.query.type,
+                set.query.subjectDimension,
                 objectsAdded,
                 objectsRemoved
         )

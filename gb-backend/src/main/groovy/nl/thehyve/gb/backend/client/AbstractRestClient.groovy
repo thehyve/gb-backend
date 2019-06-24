@@ -72,6 +72,24 @@ abstract class AbstractRestClient {
         return response.body
     }
 
+    protected <T> T getAsCurrentUser(URI uri, Class<T> type) {
+        log.debug "Sending authorised get request from ${authContext.user.username} user."
+        get(uri, type, getRestTemplateWithAuthorizationToken(authContext.tokenString))
+    }
+
+    protected static <T> T get(URI uri, Class<T> type, RestTemplate restTemplate) throws InvalidRequestException {
+
+        def httpEntity = new HttpEntity(jsonHeaders)
+        ResponseEntity<T> response = restTemplate.exchange(uri,
+                HttpMethod.GET, httpEntity, type)
+
+        if (response.statusCode != HttpStatus.OK) {
+            throw new InvalidRequestException(response.statusCode.toString())
+        }
+
+        return response.body
+    }
+
     protected RestTemplate getRestTemplateWithAuthorizationToken(String userToken) {
         def restTemplate = getRestTemplate()
         restTemplate.interceptors.add(new BearerTokenInterceptor(userToken))

@@ -9,7 +9,11 @@ package nl.thehyve.gb.backend
 import grails.gorm.transactions.Transactional
 import grails.test.mixin.integration.Integration
 import nl.thehyve.gb.backend.client.TransmartRestClient
+import nl.thehyve.gb.backend.exception.InvalidArgumentsException
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
+import nl.thehyve.gb.backend.representation.DimensionPropertiesRepresentation
+import nl.thehyve.gb.backend.representation.DimensionType
+import nl.thehyve.gb.backend.representation.DimensionsRepresentation
 import nl.thehyve.gb.backend.representation.QueryRepresentation
 import nl.thehyve.gb.backend.user.User
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,54 +33,27 @@ class QueryServiceSpec extends Specification {
     User regularUser
     User adminUser
 
+    QueryRepresentation query1Representation
+    QueryRepresentation query2Representation
+    QueryRepresentation query3Representation
+
     void setup() {
         clearDatabase()
         regularUser = new User('fake-user', 'Fake user', false, 'fake@email')
         adminUser = new User('admin', 'Administrator', true, 'fake@email')
 
         querySetService.transmartRestClient = Mock(TransmartRestClient)
+        queryService.transmartRestClient = Mock(TransmartRestClient)
 
         // for some reason without this line querySetService uses mocked queryService
         querySetService.queryService = queryService
+
+        mockTransmartRestClient()
     }
 
     @Transactional
     void 'test creating query sets with query set instances when subscribed'() {
         when: 'three queries are saved with subscription'
-        def query1Representation = new QueryRepresentation()
-        query1Representation.with {
-            name = 'test query 1'
-            type = 'patient'
-            queryConstraint = [type: 'true']
-            bookmarked = true
-            subscribed = true
-            subscriptionFreq = SubscriptionFrequency.DAILY
-            username = regularUser.username
-        }
-
-        def query2Representation = new QueryRepresentation()
-        query2Representation.with {
-            name = 'test query 2'
-            type = 'diagnosis'
-            queryConstraint = [type: 'true']
-            bookmarked = true
-            subscribed = false
-            username = regularUser.username
-        }
-
-        def query3Representation = new QueryRepresentation()
-        query3Representation.with {
-            name = 'test query 3'
-            type = 'sample1'
-            queryConstraint = [type: 'negation', arg: [type: 'true']]
-            bookmarked = false
-            subscribed = true
-            subscriptionFreq = SubscriptionFrequency.WEEKLY
-            username = adminUser.username
-        }
-
-        mockTransmartRestClient([query1Representation, query2Representation, query3Representation])
-
         queryService.create(query1Representation, regularUser)
         queryService.create(query2Representation, regularUser)
         queryService.create(query3Representation, adminUser)
@@ -91,7 +68,20 @@ class QueryServiceSpec extends Specification {
         assert querySets[1].setSize == 3
 
         assert querySetInstances.findAll { it.querySet == querySets[0] }.objectId == ["TEST:21"]
-        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["20", "21", "22"]
+        assert querySetInstances.findAll { it.querySet == querySets[1] }.objectId == ["s1", "s2", "s3"]
+    }
+
+    @Transactional
+    void 'test throwing exception when using invalid subject dimension for a query'() {
+        when: 'a query is created with an invalid dimension'
+        def queryWithUnsupportedDimension = query1Representation
+        queryWithUnsupportedDimension.subjectDimension = 'unsupported dimension'
+
+        queryService.create(queryWithUnsupportedDimension, regularUser)
+
+        then: 'the invalid argument exception is returned'
+        InvalidArgumentsException ex = thrown()
+        ex.message == "Subject dimension '${queryWithUnsupportedDimension.subjectDimension}' not supported."
     }
 
     @Transactional
@@ -109,11 +99,40 @@ class QueryServiceSpec extends Specification {
         return QuerySet.list()
     }
 
-    private void mockTransmartRestClient(List<QueryRepresentation> queriesRepresentations) {
+    private void mockTransmartRestClient() {
+        query1Representation = new QueryRepresentation()
+        query1Representation.with {
+            name = 'test query 1'
+            subjectDimension = 'patient'
+            queryConstraint = [type: 'true']
+            bookmarked = true
+            subscribed = true
+            subscriptionFreq = SubscriptionFrequency.DAILY
+            username = regularUser.username
+        }
+        query2Representation = new QueryRepresentation()
+        query2Representation.with {
+            name = 'test query 2'
+            subjectDimension = 'diagnosis'
+            queryConstraint = [type: 'true']
+            bookmarked = true
+            subscribed = false
+            username = regularUser.username
+        }
+        query3Representation = new QueryRepresentation()
+        query3Representation.with {
+            name = 'test query 3'
+            subjectDimension = 'sample1'
+            queryConstraint = [type: 'negation', arg: [type: 'true']]
+            bookmarked = false
+            subscribed = true
+            subscriptionFreq = SubscriptionFrequency.WEEKLY
+            username = adminUser.username
+        }
         def dimensionName = 'patient'
 
         queryService.querySetService.transmartRestClient.getDimensionElements(
-                'patient', queriesRepresentations[0].queryConstraint as Map) >>
+                'patient', query1Representation.queryConstraint as Map) >>
                 new DimensionElementsRepresentation(
                         name: dimensionName.toLowerCase(),
                         elements: [
@@ -124,19 +143,31 @@ class QueryServiceSpec extends Specification {
                         ]
                 )
         queryService.querySetService.transmartRestClient.getDimensionElements(
-                'sample1', queriesRepresentations[2].queryConstraint as Map) >>
+                'sample1', query3Representation.queryConstraint as Map) >>
                 new DimensionElementsRepresentation(
                         name: dimensionName.toLowerCase(),
                         elements: [
-                                [
-                                        id        : 20L
-                                ],
-                                [
-                                        id        : 21L
-                                ],
-                                [
-                                        id        : 22L
-                                ]
+                                "s1",
+                                "s2",
+                                "s3"
+                        ]
+                )
+
+        queryService.transmartRestClient.getDimensions() >>
+                new DimensionsRepresentation(
+                        dimensions: [
+                                new DimensionPropertiesRepresentation(
+                                        name: 'patient',
+                                        dimensionType: DimensionType.SUBJECT
+                                ),
+                                new DimensionPropertiesRepresentation(
+                                        name: 'sample1',
+                                        dimensionType: DimensionType.SUBJECT
+                                ),
+                                new DimensionPropertiesRepresentation(
+                                        name: 'diagnosis',
+                                        dimensionType: DimensionType.SUBJECT
+                                )
                         ]
                 )
     }
@@ -150,6 +181,3 @@ class QueryServiceSpec extends Specification {
     }
 
 }
-
-
-

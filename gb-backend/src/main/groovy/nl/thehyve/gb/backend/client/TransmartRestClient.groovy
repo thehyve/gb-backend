@@ -10,6 +10,7 @@ import com.google.common.net.UrlEscapers
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation
+import nl.thehyve.gb.backend.representation.DimensionsRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
@@ -48,5 +49,16 @@ class TransmartRestClient extends AbstractRestClient {
         } else {
             postAsCurrentUser(uri, body, DimensionElementsRepresentation.class)
         }
+    }
+
+    /**
+     * Request all dimensions.
+     * GET /v2/dimensions
+     *
+     * @return a list of all dimensions the current user has access to.
+     */
+    DimensionsRepresentation getDimensions() {
+        URI uri = URI.create("$transmartServerUrl/$transmartApiVersion/dimensions")
+        getAsCurrentUser(uri, DimensionsRepresentation.class)
     }
 }
