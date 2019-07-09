@@ -28,7 +28,7 @@ services:
       DB_PORT: 5432
       DB_NAME: gb_backend
     volumes:
-      - ./extra_certs.pem:/home/gb-backend/extra_certs.pem
+      - ./extra_certs.pem:/home/gb_backend_usr/extra_certs.pem
     depends_on:
       - gb-backend-database
 #      - transmart-api-server
