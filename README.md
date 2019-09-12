@@ -69,6 +69,13 @@ Before using the command you have to substitute words in uppercase with proper o
 
 The value of the `refresh_token` field in the response is the offline token.
 
+### Audience Support
+
+The application checks audience on the access token - verifies if the audience field contains the Keycloak client ID.
+In Keyclaok versions <= 4.5.0 client ID in access token audience field is always included by default. 
+For newer versions of Keycloak the client has to be configured to include it. Follow [the official instruction](https://www.keycloak.org/docs/4.8/server_admin/#_audience_hardcoded) to hardcode the 
+audience for the client.
+
 ## API calls:
 
 - GET `/queries`
