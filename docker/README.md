@@ -43,7 +43,7 @@ Publish the image to [Docker Hub](https://hub.docker.com/r/thehyve/glowing-bear-
 
 ```bash
 docker login
-GB_BACKEND_VERSION="1.0.0"
+GB_BACKEND_VERSION="1.0.1"
 docker tag glowing-bear-backend "thehyve/glowing-bear-backend:${GB_BACKEND_VERSION}"
 docker push "thehyve/glowing-bear-backend:${GB_BACKEND_VERSION}"
 ```
