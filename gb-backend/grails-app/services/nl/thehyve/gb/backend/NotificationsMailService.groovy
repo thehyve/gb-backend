@@ -52,6 +52,9 @@ class NotificationsMailService {
         assert maxNumberOfSets
 
         List<User> users = userService.getUsersWithEmailSpecified()
+        if (users == null) {
+            return
+        }
         Date reportDate = new Date()
         for (user in users) {
             Map<String, List<QuerySetChangesRepresentation>> queryTypeToQuerySetsChanges =

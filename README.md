@@ -1,5 +1,6 @@
 # gb-backend
 [![Build Status](https://travis-ci.org/thehyve/gb-backend.svg?branch=master)](https://travis-ci.org/thehyve/gb-backend)
+[![Known vulnerabilities](https://snyk.io//test/github/thehyve/gb-backend/badge.svg?targetFile=gb-backend/build.gradle)](https://snyk.io//test/github/thehyve/gb-backend?targetFile=gb-backend/build.gradle)
 
 Backend application for Glowing Bear UI, supporting user queries management, subscription and notification functionality.
 
@@ -104,7 +105,7 @@ The value of the `refresh_token` field in the response is the offline token.
 - GET `/queries/<$queryId>/sets`
    - Gets a list of query result change entries by `queryId`. History of data changes for specific query.
 
-### Only for administrators.
+### Only for administrators:
 
 - POST `/queries/sets/scan`
    - Scans for changes in entries of the stored queries and updates stored sets.
@@ -119,6 +120,16 @@ The value of the `refresh_token` field in the response is the offline token.
      - `frequency` - `DAILY`|`WEEKLY `- determines whether the email should be sent to users with a DAILY or WEEKLY subscription.
 
 All calls require an Authorization header.
+
+### Availability monitoring calls:
+
+- GET `/health`
+   - [Spring Boot Actuator health endpoint](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html).
+     Shows application health information: a simple overall status (`UP` or `DOWN`) when accessed over
+     an unauthenticated connection or full message details (including database status) when authenticated
+     and the user has administrator role;
+
+For more details see [the official Spring documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-health).
 
 ## Email notifications
 

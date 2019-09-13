@@ -9,6 +9,7 @@ package nl.thehyve.gb.backend.client
 import grails.util.Holders
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import nl.thehyve.gb.backend.exception.ServiceNotAvailableException
 import org.keycloak.representations.AccessTokenResponse
 import org.keycloak.representations.idm.ClientMappingsRepresentation
 import org.keycloak.representations.idm.MappingsRepresentation
@@ -52,15 +53,17 @@ class KeycloakRestClient extends AbstractRestClient {
     private List<UserRepresentation> getUsers(String accessToken) {
         RestTemplate template = getRestTemplateWithAuthorizationToken(accessToken)
         ResponseEntity<List<UserRepresentation>> response = template
-                .exchange("${keycloakServerUrl}/admin/realms/${realm}/users", HttpMethod.GET, null, userListRef)
-
-        response.body
+                .exchange("${keycloakServerUrl}/admin/realms/${realm}/users".toString(), HttpMethod.GET, null, userListRef)
+        if (response.statusCode == HttpStatus.OK) {
+            return response.body
+        }
+        throw new ServiceNotAvailableException("Could not fetch list of users. Status: ${response.statusCode}")
     }
 
     private Set<String> getRoles(String userId, String accessToken) {
         RestTemplate template = getRestTemplateWithAuthorizationToken(accessToken)
         ResponseEntity<MappingsRepresentation> response = template.getForEntity(
-                "$keycloakServerUrl/admin/realms/$realm/users/$userId/role-mappings",
+                "$keycloakServerUrl/admin/realms/$realm/users/$userId/role-mappings".toString(),
                 MappingsRepresentation.class)
 
         Map<String, ClientMappingsRepresentation> rolesPerClient = response.body.clientMappings
