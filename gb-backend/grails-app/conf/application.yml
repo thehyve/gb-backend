@@ -139,6 +139,8 @@ keycloak:
     bearer-only: true
     # Important for parsing roles correctly
     use-resource-role-mappings: true
+    # Ensure audience field validation on the access token (by default not verified)
+    verify-token-audience: true
 
 environments:
     development:
