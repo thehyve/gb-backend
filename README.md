@@ -190,6 +190,7 @@ nl.thehyve.gb.backend.notifications:
     dailyJobTriggerTime: 0-0
     # Name of the client application on behalf of which gb-backend will send notification email.
     clientApplicationName: Glowing Bear
+    clientApplicationUrl: https://glowingbear.example.com
 ```
 
 ## License
