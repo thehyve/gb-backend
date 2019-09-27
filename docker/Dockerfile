@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-ARG GB_BACKEND_VERSION="1.0.1"
+ARG GB_BACKEND_VERSION="1.0.2"
 
 ENV GB_BACKEND_WAR_URL https://repo.thehyve.nl/content/repositories/releases/nl/thehyve/gb-backend/${GB_BACKEND_VERSION}/gb-backend-${GB_BACKEND_VERSION}.war
 
