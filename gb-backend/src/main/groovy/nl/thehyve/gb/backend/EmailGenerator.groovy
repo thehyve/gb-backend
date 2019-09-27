@@ -40,8 +40,10 @@ class EmailGenerator {
      *
      */
     static String getQuerySubscriptionUpdatesBody(Map<String, List<QuerySetChangesRepresentation>> queryTypeToQuerySetsChanges,
-                                                  String clientAppName,
-                                                  Date reportDate) {
+            String clientAppName,
+            String clientAppUrl,
+            Date reportDate) {
+        String clientAppLink = clientAppUrl && !clientAppUrl.empty ? "<a href=\"${clientAppUrl}\">${clientAppName}</a>" : clientAppName
         String header = [
                 'Hello,',
                 '',
@@ -50,7 +52,9 @@ class EmailGenerator {
         ].join(BR)
         String updateInfo = htmlTablesGroupedByType(queryTypeToQuerySetsChanges)
         String footer = [
-                "You can login to ${clientAppName} to reload your cohorts and review the new data available.",
+                "You can login to ${clientAppLink} to reload your cohorts and review the new data available.",
+                "The list of cohorts is in the left panel. Click on the cohort and select 'Show subscription records' to see the identifiers of the records that were added or removed.",
+
                 'Regards,',
                 '',
                 clientAppName,
