@@ -37,6 +37,7 @@ class NotificationsMailService {
     QuerySetService querySetService
 
     String clientApplicationName
+    String clientApplicationUrl
     Integer maxNumberOfSets
 
     /**
@@ -64,6 +65,7 @@ class NotificationsMailService {
                 String emailSubject = EmailGenerator.getQuerySubscriptionUpdatesSubject(clientApplicationName, reportDate)
                 String emailBodyHtml = EmailGenerator.getQuerySubscriptionUpdatesBody(queryTypeToQuerySetsChanges,
                         clientApplicationName,
+                        clientApplicationUrl,
                         reportDate)
                 sendEmail(user.email, emailSubject, emailBodyHtml)
             }
