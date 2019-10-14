@@ -75,7 +75,7 @@ class EmailGeneratorSpec extends Specification {
                 '</table>' +
                 '<p />You can login to <a href="https://abc.example.com">ABC</a> to reload your cohorts and review the new data available.' +
                 '<br />The list of cohorts is in the left panel. Click on the cohort and select \'Show subscription records\' to see the identifiers of the records that were added or removed.' +
-                '<br />Regards,<br /><br />ABC'
+                '<br /><br />Regards,<br /><br />ABC'
         when:
         def realContent = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientAppName, clientAppUrl, reportDate)
         then:

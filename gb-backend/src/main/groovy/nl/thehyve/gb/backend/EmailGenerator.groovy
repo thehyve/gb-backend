@@ -54,7 +54,7 @@ class EmailGenerator {
         String footer = [
                 "You can login to ${clientAppLink} to reload your cohorts and review the new data available.",
                 "The list of cohorts is in the left panel. Click on the cohort and select 'Show subscription records' to see the identifiers of the records that were added or removed.",
-
+                '',
                 'Regards,',
                 '',
                 clientAppName,
