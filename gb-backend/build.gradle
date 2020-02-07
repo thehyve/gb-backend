@@ -13,12 +13,13 @@ buildscript {
 version "0.1-SNAPSHOT"
 group "nl.thehyve"
 
-apply plugin:"eclipse"
-apply plugin:"idea"
-apply plugin:"war"
-apply plugin:"org.grails.grails-web"
-apply plugin:'net.linguica.maven-settings'
-apply plugin:"maven-publish"
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'war'
+apply plugin: 'org.grails.grails-web'
+apply plugin: 'net.linguica.maven-settings'
+apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
 
 repositories {
     mavenLocal()
@@ -105,3 +106,13 @@ publishToMavenLocal.dependsOn 'bootRepackage'
 bootRun {
     jvmArgs = ['-Dspring.output.ansi.enabled=always']
 }
+
+jacocoTestReport {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
