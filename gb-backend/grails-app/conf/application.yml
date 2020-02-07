@@ -13,6 +13,7 @@ nl.thehyve.gb.backend:
         dailyJobTriggerTime: 0-0
         # Client application name referred from email content
         clientApplicationName: Glowing Bear
+        clientApplicationUrl:
 
 ---
 # Quartz plugin configuration - job for query subscription
@@ -89,20 +90,20 @@ grails:
         types:
             json:
               - application/json
-              - text/json   
+              - text/json
             hal:
               - application/hal+json
-              - application/hal+xml  
+              - application/hal+xml
             xml:
               - text/xml
-              - application/xml                                 
+              - application/xml
             atom: application/atom+xml
             css: text/css
             csv: text/csv
             js: text/javascript
             rss: application/rss+xml
             text: text/plain
-            all: '*/*'            
+            all: '*/*'
     urlmapping:
         cache:
             maxsize: 1000
@@ -139,6 +140,8 @@ keycloak:
     bearer-only: true
     # Important for parsing roles correctly
     use-resource-role-mappings: true
+    # Ensure audience field validation on the access token (by default not verified)
+    verify-token-audience: true
 
 environments:
     development:

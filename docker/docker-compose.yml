@@ -14,7 +14,7 @@ services:
 
   gb-backend:
     container_name: gb-backend
-    image: thehyve/glowing-bear-backend:1.0.1
+    image: thehyve/glowing-bear-backend:1.0.3
     ports:
       - 8083:8083
     environment:

@@ -25,6 +25,7 @@ class EmailGeneratorSpec extends Specification {
     }
 
     def 'body of the query subscription updates'() {
+        String clientAppUrl = 'https://abc.example.com'
         String clientAppName = 'ABC'
         Map<String, List<QuerySetChangesRepresentation>> querySetChanges = [
                 Diagnosis: [
@@ -72,10 +73,11 @@ class EmailGeneratorSpec extends Specification {
                 '<tr><td>first saved query</td><td>35</td><td>3</td><td>1</td><td>May 3 2017 13:30</td></tr>' +
                 '<tr><td>test query</td><td>50</td><td>6</td><td>2</td><td>August 16 2017 8:45</td></tr>' +
                 '</table>' +
-                '<p />You can login to ABC to reload your cohorts and review the new data available.' +
-                '<br />Regards,<br /><br />ABC'
+                '<p />You can login to <a href="https://abc.example.com">ABC</a> to reload your cohorts and review the new data available.' +
+                '<br />The list of cohorts is in the left panel. Click on the cohort and select \'Show subscription records\' to see the identifiers of the records that were added or removed.' +
+                '<br /><br />Regards,<br /><br />ABC'
         when:
-        def realContent = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientAppName, reportDate)
+        def realContent = EmailGenerator.getQuerySubscriptionUpdatesBody(querySetChanges, clientAppName, clientAppUrl, reportDate)
         then:
         realContent == expectedContent
     }
