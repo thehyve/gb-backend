@@ -1,12 +1,7 @@
-dist: trusty
-os:
-  - linux
+os: linux
 language: groovy
-jdk:
-  - oraclejdk8
+jdk: openjdk8
 
-script:
-  - gradle check -i
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -14,3 +9,29 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+script:
+  - gradle check -i
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+# For deployment to Nexus, configure the `NEXUS_USERNAME` and `NEXUS_PASSWORD` variables:
+# - `travis env set NEXUS_USERNAME ...`
+# - `travis env set NEXUS_PASSWORD ...`
+deploy:
+  - provider: script
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    on:
+      branch: dev
+  - provider: script
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    on:
+      branch: release
+
+# For deployment to Docker Hub, configure the `DOCKER_USERNAME` and `DOCKER_PASSWORD` variables:
+# - `travis env set DOCKER_USERNAME ...`
+# - `travis env set DOCKER_PASSWORD ...` (create a new access token for this purpose)
+after_deploy:
+  - travis_retry ./.travis/docker_release.sh
+  - ./.travis/notify.sh
