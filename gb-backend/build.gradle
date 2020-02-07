@@ -31,7 +31,7 @@ ext {
     hibernateCoreVersion = '5.2.18.Final'
     keycloakVersion = '6.0.1'
     mailPluginVersion = '2.0.0'
-    postgresqlVersion = '42.2.5'
+    postgresqlVersion = '42.2.9'
     quartzPluginVersion = '2.0.13'
 }
 
