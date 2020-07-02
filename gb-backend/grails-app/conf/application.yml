@@ -4,7 +4,7 @@ nl.thehyve.gb.backend:
         enabled: true
     notifications:
         # enable the notifications endpoint and the execution of daily and weekly notification jobs
-        enabled: false
+        enabled: ${GB_BACKEND_NOTICATIONS_ENABLED:false}
         # max number of query sets returned in a subscription email
         maxNumberOfSets: 20
         # daily cron job trigger time in format: hh-mm
@@ -133,7 +133,7 @@ dataSource:
     jmxExport: true
     driverClassName: org.postgresql.Driver
     dialect: org.hibernate.dialect.PostgreSQLDialect
-    url: jdbc:postgresql://localhost:5432/gb_backend
+    url: jdbc:postgresql://localhost:${PGPORT:5432}/gb_backend
 
 keycloak:
     # To send unauthorized response (401) instead of redirecting to keycloak login page
@@ -148,18 +148,18 @@ environments:
         disable-trust-manager: true # when true, SSL certificate checking is disabled. Do not use that in production!
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost:5432/gb_backend
+            url: jdbc:postgresql://localhost:${PGPORT:5432}/gb_backend
             username: gb
             password: gb
         transmart:
-            server-url: http://localhost:8081
+            server-url: ${TRANSMART_API_SERVER_URL:http://localhost:8081}
             api-version: v2
         keycloak:
-            realm: dev
-            auth-server-url: http://localhost:8080/auth
-            resource: transmart
+            realm: ${KEYCLOAK_REALM:dev}
+            auth-server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}/auth
+            resource: ${KEYCLOAK_CLIENT_ID:transmart}
         keycloakOffline:
-            offlineToken: <offline_token>
+            offlineToken: ${KEYCLOAK_OFFLINE_TOKEN:<offline_token>}
 
     test:
         dataSource:
@@ -169,12 +169,14 @@ environments:
             username: sa
             password: ''
         transmart:
-            server-url: http://localhost:8081
+            server-url: ${TRANSMART_API_SERVER_URL:http://localhost:8081}
             api-version: v2
         keycloak:
-            realm: test
-            auth-server-url: http://localhost:8080/auth
-            resource: transmart
+            realm: ${KEYCLOAK_REALM:test}
+            auth-server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}/auth
+            resource: ${KEYCLOAK_CLIENT_ID:transmart}
+        keycloakOffline:
+            offlineToken: ${KEYCLOAK_OFFLINE_TOKEN}
     production:
         hibernate:
             show_sql: false
