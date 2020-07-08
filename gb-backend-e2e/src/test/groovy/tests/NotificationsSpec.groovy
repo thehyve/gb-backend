@@ -9,6 +9,7 @@ package tests
 import base.RESTSpec
 import base.RestHelper
 import base.ErrorResponse
+import spock.lang.Requires
 
 import static base.ContentTypeFor.JSON
 import static config.Config.*
@@ -68,6 +69,9 @@ class NotificationsSpec extends RESTSpec {
         responseData2.type == 'InvalidArgumentsException'
     }
 
+    static final EMAIL_ENABLED = System.getenv("EMAIL_ENABLED")?.toBoolean() ?: false
+
+    @Requires({ -> EMAIL_ENABLED})
     void 'test triggering email by a ADMIN'() {
         def frequency = "DAILY"
         expect: "I try to trigger email sending as ADMIN"
