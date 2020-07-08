@@ -7,6 +7,11 @@ To start the server, run the following in the `gb-backend` directory:
 ```bash
 # Start the server
 pushd ..
+export TRANSMART_API_SERVER_URL=https://transmart-dev.thehyve.net
+export KEYCLOAK_REALM=transmart-dev
+export KEYCLOAK_SERVER_URL=https://keycloak-dwh-test.thehyve.net
+export KEYCLOAK_CLIENT_ID=transmart-client
+export NOTICATIONS_ENDPOINT_ENABLED=true
 ./gradlew -Dgrails.env=test bootRun
 popd
 ```
@@ -23,3 +28,10 @@ gradle test --tests '*namespec'
 # Change base url:
 gradle -DbaseUrl=https://some-gb-backend-server.com/ test
 ```
+
+To enable testing triggering of notification emails, configure an offline token for
+Keycloak (`export KEYCLOAK_OFFLINE_TOKEN=<offline token>`) and run:
+```
+EMAIL_ENABLED=true gradle test
+```
+Note that as a side effect, emails are sent!
