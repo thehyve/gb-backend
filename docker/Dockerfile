@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-ARG GB_BACKEND_VERSION="1.0.3"
+ARG GB_BACKEND_VERSION="1.0.6"
 
 ENV APP_PORT 8083
 ENV APP_USR gb_backend_usr
