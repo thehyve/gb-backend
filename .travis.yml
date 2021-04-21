@@ -18,8 +18,11 @@ before_install:
   - GRADLE_SCRIPT="${GRADLE_HOME}/bin/gradle"
   - $GRADLE_SCRIPT --version
 
+install:
+  - $GRADLE_SCRIPT assemble
+
 script:
-  - gradle check -i
+  - $GRADLE_SCRIPT check -i
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -29,11 +32,11 @@ after_success:
 # - `travis env set NEXUS_PASSWORD ...`
 deploy:
   - provider: script
-    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && $GRADLE_SCRIPT publish"
     on:
       branch: dev
   - provider: script
-    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && $GRADLE_SCRIPT publish"
     on:
       branch: release
 
