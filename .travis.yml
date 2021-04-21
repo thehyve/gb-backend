@@ -10,6 +10,14 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+before_install:
+  - GRADLE_VERSION=4.10.3
+  - curl -f -L "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o "gradle-${GRADLE_VERSION}-bin.zip"
+  - unzip "gradle-${GRADLE_VERSION}-bin.zip"
+  - GRADLE_HOME="$(pwd)/gradle-${GRADLE_VERSION}"
+  - GRADLE_SCRIPT="${GRADLE_HOME}/bin/gradle"
+  - $GRADLE_SCRIPT --version
+
 script:
   - gradle check -i
 
