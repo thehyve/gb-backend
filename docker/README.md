@@ -8,7 +8,7 @@ Docker image definitions and docker-compose profiles to run gb-backend and its d
 Run the full stack with:
 ```bash
 export TRANSMART_API_SERVER_URL=https://transmart.example.com
-export KEYCLOAK_SERVER_URL=https://keycloak.example.com
+export KEYCLOAK_SERVER_URL=https://keycloak.example.com/auth
 export KEYCLOAK_REALM=transmart-dev
 export KEYCLOAK_CLIENT_ID=transmart-client
 docker-compose -f docker-compose.yml up

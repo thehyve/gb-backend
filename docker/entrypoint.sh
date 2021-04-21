@@ -8,7 +8,7 @@ transmart:
   api-version: v2
 
 keycloak:
-  auth-server-url: ${KEYCLOAK_SERVER_URL}/auth
+  auth-server-url: ${KEYCLOAK_SERVER_URL}
   realm: ${KEYCLOAK_REALM}
   resource: ${KEYCLOAK_CLIENT_ID}
 
