@@ -31,7 +31,7 @@ ext {
     guavaVersion = '30.0-jre'
     hibernateCoreVersion = '5.2.18.Final'
     jacksonVersion = '2.11.0'
-    keycloakVersion = '10.0.2'
+    keycloakVersion = '12.0.4'
     mailPluginVersion = '2.0.0'
     postgresqlVersion = '42.2.14.jre7'
     quartzPluginVersion = '2.0.13'
