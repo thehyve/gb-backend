@@ -9,12 +9,3 @@ buildscript {
 }
 
 apply plugin: 'org.owasp.dependencycheck'
-
-ext {
-    gradleWrapperVersion = project.gradleWrapperVersion
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = gradleWrapperVersion
-}
-
