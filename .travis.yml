@@ -1,6 +1,10 @@
 os: linux
 language: groovy
 jdk: openjdk8
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    - PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
