@@ -8,7 +8,7 @@ package nl.thehyve.gb.backend
 
 import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
-import grails.test.mixin.integration.Integration
+import grails.testing.mixin.integration.Integration
 import nl.thehyve.gb.backend.client.TransmartRestClient
 import nl.thehyve.gb.backend.exception.InvalidRequestException
 import nl.thehyve.gb.backend.representation.DimensionElementsRepresentation

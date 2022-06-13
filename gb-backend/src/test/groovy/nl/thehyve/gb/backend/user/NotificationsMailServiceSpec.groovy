@@ -12,6 +12,8 @@ import nl.thehyve.gb.backend.SubscriptionFrequency
 import nl.thehyve.gb.backend.representation.QuerySetChangesRepresentation
 import spock.lang.Specification
 
+import java.text.SimpleDateFormat
+
 class NotificationsMailServiceSpec extends Specification {
 
     NotificationsMailService testee
@@ -41,11 +43,12 @@ class NotificationsMailServiceSpec extends Specification {
     }
 
     private void mockQuerySetService() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         testee.querySetService.getQueriesChangeHistoriesByUsernameAndFrequency( _ as String, _ as SubscriptionFrequency, _) >> [
                 new QuerySetChangesRepresentation(
                         queryId: 37,
                         queryName: 'test query1',
-                        createDate: Date.parse("yyyy-MM-dd hh:mm", '2015-12-17 06:33'),
+                        createDate: format.parse('2015-12-17 06:33'),
                         queryType: 'diagnosis',
                         objectsAdded: ['d1', 'd2', 'd3'],
                         objectsRemoved: []
@@ -53,7 +56,7 @@ class NotificationsMailServiceSpec extends Specification {
                 new QuerySetChangesRepresentation(
                         queryId: 41,
                         queryName: 'test query2',
-                        createDate: Date.parse("yyyy-MM-dd hh:mm", '2019-02-07 17:59'),
+                        createDate: format.parse( '2019-02-07 17:59'),
                         queryType: 'patient',
                         objectsAdded: ['p1', 'p2'],
                         objectsRemoved: ['p3','p4', 'p5', 'p6']
@@ -61,7 +64,7 @@ class NotificationsMailServiceSpec extends Specification {
                 new QuerySetChangesRepresentation(
                         queryId: 38,
                         queryName: 'test query3',
-                        createDate: Date.parse("yyyy-MM-dd hh:mm", '2019-01-07 12:47'),
+                        createDate: format.parse( '2019-01-07 12:47'),
                         queryType: 'diagnosis',
                         objectsAdded: [],
                         objectsRemoved: ['d8','d4', 'd5', 'd6']
@@ -69,7 +72,7 @@ class NotificationsMailServiceSpec extends Specification {
                 new QuerySetChangesRepresentation(
                         queryId: 40,
                         queryName: 'test query4',
-                        createDate: Date.parse("yyyy-MM-dd hh:mm",  '2018-04-06 00:14'),
+                        createDate: format.parse(  '2018-04-06 00:14'),
                         queryType: 'diagnosis',
                         objectsAdded: ['d1', 'd2'],
                         objectsRemoved: ['d4', 'd6']
@@ -77,7 +80,7 @@ class NotificationsMailServiceSpec extends Specification {
                 new QuerySetChangesRepresentation(
                         queryId: 39,
                         queryName: 'test query5',
-                        createDate: Date.parse("yyyy-MM-dd hh:mm", '2011-10-14 11:44'),
+                        createDate: format.parse( '2011-10-14 11:44'),
                         queryType: 'custom sample',
                         objectsAdded: ['x', 'y', 'z'],
                         objectsRemoved: ['a']
@@ -85,7 +88,7 @@ class NotificationsMailServiceSpec extends Specification {
                 new QuerySetChangesRepresentation(
                         queryId: 36,
                         queryName: 'test query6',
-                        createDate:Date.parse("yyyy-MM-dd hh:mm",'2019-01-01 10:47'),
+                        createDate: format.parse('2019-01-01 10:47'),
                         queryType: 'patient',
                         objectsAdded: ['p1'],
                         objectsRemoved: ['p3']

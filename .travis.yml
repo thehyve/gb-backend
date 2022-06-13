@@ -1,6 +1,10 @@
 os: linux
 language: groovy
 jdk: openjdk8
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    - PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -11,7 +15,7 @@ cache:
     - $HOME/.gradle/wrapper/
 
 before_install:
-  - GRADLE_VERSION=4.10.3
+  - GRADLE_VERSION=5.0
   - curl -f -L "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o "gradle-${GRADLE_VERSION}-bin.zip"
   - unzip "gradle-${GRADLE_VERSION}-bin.zip"
   - GRADLE_HOME="$(pwd)/gradle-${GRADLE_VERSION}"
