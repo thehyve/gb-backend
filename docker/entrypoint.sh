@@ -36,5 +36,5 @@ exec java -jar -server \
         "-Dmail.mime.decodeparameters=true" \
         "-Djava.security.egd=file:///dev/urandom" \
         "-Dserver.port=${APP_PORT}" \
-        "-Dspring.config.location=${APP_CONFIG_FILE}" \
+        "-Dspring.config.additional-location=${APP_CONFIG_FILE}" \
     "gb-backend.war"
