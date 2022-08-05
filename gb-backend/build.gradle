@@ -31,12 +31,12 @@ repositories {
 
 ext {
     guavaVersion = '30.1.1-jre'
-    hibernateCoreVersion = '5.4.0.Final'
-    jacksonVersion = '2.11.0'
+    hibernateCoreVersion = '5.4.33.Final'
+    jacksonVersion = '2.13.3'
     keycloakVersion = '18.0.0'
     mailPluginVersion = '3.0.0'
     cachePluginVersion = '5.0.1'
-    postgresqlVersion = '42.2.25'
+    postgresqlVersion = '42.2.26'
     quartzPluginVersion = '2.0.13'
     quartzVersion = '2.3.2'
     springSecurityVersion = '5.7.1'
