@@ -1,6 +1,10 @@
 os: linux
 language: groovy
 jdk: openjdk8
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    - PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -10,8 +14,19 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
+before_install:
+  - GRADLE_VERSION=5.0
+  - curl -f -L "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o "gradle-${GRADLE_VERSION}-bin.zip"
+  - unzip "gradle-${GRADLE_VERSION}-bin.zip"
+  - GRADLE_HOME="$(pwd)/gradle-${GRADLE_VERSION}"
+  - GRADLE_SCRIPT="${GRADLE_HOME}/bin/gradle"
+  - $GRADLE_SCRIPT --version
+
+install:
+  - $GRADLE_SCRIPT assemble
+
 script:
-  - gradle check -i
+  - $GRADLE_SCRIPT check -i
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -21,11 +36,13 @@ after_success:
 # - `travis env set NEXUS_PASSWORD ...`
 deploy:
   - provider: script
-    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    skip_cleanup: true
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && $GRADLE_SCRIPT publish"
     on:
       branch: dev
   - provider: script
-    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
+    skip_cleanup: true
+    script: "cp .travis/settings.xml $HOME/.m2/settings.xml && $GRADLE_SCRIPT publish"
     on:
       branch: release
 

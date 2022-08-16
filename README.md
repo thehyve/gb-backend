@@ -49,31 +49,37 @@ They have to match with settings frontend glowing bear application uses.
 
 The application requires an offline token to be able to run batch jobs.
 
-Below is `curl` command to generate an offline token for `USERNAME` user.
-To get the token the user needs to have the role mapping for the realm-level: `"offline_access"`.
+Below is `curl` command to generate an offline token for `SYSTEM_USERNAME` user.
+To get the token the user needs to have the role mapping for the realm-level: `offline_access`.
 Before using the command you have to substitute words in uppercase with proper ones.
 
-**NOTE:** The offline user (`USERNAME` in example below) has to have following `realm-management` roles:
+**NOTE:** The offline user (`SYSTEM_USERNAME` in example below) has to have following `realm-management` roles:
 
 - `impersonation` - to support running queries on behalf of queries owners.
 - `view-users` - to fetch list of users with the keycloak API. Used by the queries processing and sending emails.
 
 ```bash
-    curl \
-      -d 'client_id=CLIENT_ID' \
-      -d 'username=USERNAME' \
-      -d 'password=PASSWORD' \
+    KEYCLOAK_CLIENT_ID=transmart-client
+    SYSTEM_USERNAME=system
+    SYSTEM_PASSWORD=choose-a-strong-system-password # CHANGE ME
+    KEYCLOAK_SERVER_URL=https://keycloak.example.com/auth
+    KEYCLOAK_REALM=example
+
+    curl -f --no-progress-meter \
+      -d "client_id=${KEYCLOAK_CLIENT_ID}" \
+      -d "username=${SYSTEM_USERNAME}" \
+      -d "password=${SYSTEM_PASSWORD}" \
       -d 'grant_type=password' \
       -d 'scope=offline_access' \
-      'https://YOUR_KEYCLOAK_SERVER_HOST/auth/realms/YOUR_REALM/protocol/openid-connect/token'
+      "${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token' | jq -r '.refresh_token'
 ```
 
 The value of the `refresh_token` field in the response is the offline token.
 
-### Audience Support
+### Audience support
 
 The application checks audience on the access token - verifies if the audience field contains the Keycloak client ID.
-In Keyclaok versions <= 4.5.0 client ID in access token audience field is always included by default. 
+In Keycloak versions <= 4.5.0 client ID in access token audience field is always included by default. 
 For newer versions of Keycloak the client has to be configured to include it. Follow [the official instruction](https://www.keycloak.org/docs/4.8/server_admin/#_audience_hardcoded) to hardcode the 
 audience for the client.
 

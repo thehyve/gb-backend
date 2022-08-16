@@ -8,7 +8,7 @@ Docker image definitions and docker-compose profiles to run gb-backend and its d
 Run the full stack with:
 ```bash
 export TRANSMART_API_SERVER_URL=https://transmart.example.com
-export KEYCLOAK_SERVER_URL=https://keycloak.example.com
+export KEYCLOAK_SERVER_URL=https://keycloak.example.com/auth
 export KEYCLOAK_REALM=transmart-dev
 export KEYCLOAK_CLIENT_ID=transmart-client
 docker-compose -f docker-compose.yml up
@@ -43,7 +43,7 @@ Publish the image to [Docker Hub](https://hub.docker.com/r/thehyve/glowing-bear-
 
 ```bash
 docker login
-GB_BACKEND_VERSION="1.0.3"
+GB_BACKEND_VERSION="1.0.7"
 docker tag glowing-bear-backend "thehyve/glowing-bear-backend:${GB_BACKEND_VERSION}"
 docker push "thehyve/glowing-bear-backend:${GB_BACKEND_VERSION}"
 ```

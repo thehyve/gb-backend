@@ -5,12 +5,13 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
+        classpath "org.grails.plugins:hibernate5:${gormVersion}"
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
+        classpath 'org.owasp:dependency-check-gradle:7.1.0.1'
     }
 }
 
-version "1.0.5"
+version "1.0.7"
 group "nl.thehyve"
 
 apply plugin: 'eclipse'
@@ -20,6 +21,7 @@ apply plugin: 'org.grails.grails-web'
 apply plugin: 'net.linguica.maven-settings'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
+apply plugin: 'org.owasp.dependencycheck'
 
 repositories {
     mavenLocal()
@@ -28,16 +30,17 @@ repositories {
 }
 
 ext {
-    guavaVersion = '29.0-jre'
-    hibernateCoreVersion = '5.2.18.Final'
-    jacksonVersion = '2.11.0'
-    keycloakVersion = '10.0.2'
-    mailPluginVersion = '2.0.0'
-    postgresqlVersion = '42.2.14.jre7'
+    guavaVersion = '30.1.1-jre'
+    hibernateCoreVersion = '5.4.33.Final'
+    jacksonVersion = '2.13.3'
+    keycloakVersion = '18.0.0'
+    mailPluginVersion = '3.0.0'
+    cachePluginVersion = '5.0.1'
+    postgresqlVersion = '42.2.26'
     quartzPluginVersion = '2.0.13'
     quartzVersion = '2.3.2'
-    springSecurityVersion = '4.2.17.RELEASE'
-    tomcatVersion = '8.5.56'
+    springSecurityVersion = '5.7.1'
+    tomcatVersion = '9.0.63'
 }
 
 dependencyManagement {
@@ -75,7 +78,7 @@ dependencies {
     compile "org.grails:grails-plugin-services"
     compile "org.grails:grails-web-boot"
     compile "org.grails.plugins:async"
-    compile "org.grails.plugins:cache"
+    compile "org.grails.plugins:cache:${cachePluginVersion}"
     compile "org.grails.plugins:events"
     compile "org.grails.plugins:hibernate5"
     compile "org.grails.plugins:mail:${mailPluginVersion}"
@@ -84,7 +87,7 @@ dependencies {
     compile ("org.grails.plugins:quartz:${quartzPluginVersion}") {
         exclude group: 'org.quartz-scheduler', module: 'quartz'
     }
-    compile("org.keycloak:keycloak-legacy-spring-boot-starter") {
+    compile("org.keycloak:keycloak-spring-boot-starter") {
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
     }
@@ -104,8 +107,8 @@ dependencies {
     runtime "org.apache.tomcat:tomcat-jdbc"
     runtime "org.postgresql:postgresql:${postgresqlVersion}"
 
-    testCompile "org.grails:grails-test-mixins:3.3.0"
-    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+    testCompile "org.grails:grails-gorm-testing-support:2.6.0"
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
 }
 
 publishing {
@@ -123,8 +126,8 @@ publishing {
         }
     }
 }
-publish.dependsOn 'bootRepackage'
-publishToMavenLocal.dependsOn 'bootRepackage'
+publish.dependsOn 'bootWar'
+publishToMavenLocal.dependsOn 'bootWar'
 
 bootRun {
     jvmArgs = ['-Dspring.output.ansi.enabled=always']

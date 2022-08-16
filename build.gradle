@@ -1,20 +1,7 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.owasp:dependency-check-gradle:5.3.2.1'
-    }
-}
-
-apply plugin: 'org.owasp.dependencycheck'
-
 ext {
     gradleWrapperVersion = project.gradleWrapperVersion
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = gradleWrapperVersion
 }
-

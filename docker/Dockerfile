@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-ARG GB_BACKEND_VERSION="1.0.3"
+ARG GB_BACKEND_VERSION="1.0.7"
 
 ENV APP_PORT 8083
 ENV APP_USR gb_backend_usr
@@ -28,6 +28,7 @@ RUN if echo "${GB_BACKEND_VERSION}" | grep '\.*-SNAPSHOT$' -; then \
     else \
       curl -f -L "https://repo.thehyve.nl/service/local/artifact/maven/redirect?r=releases&g=nl.thehyve&a=gb-backend&v=${GB_BACKEND_VERSION}&p=war" -o "${APP_USR_HOME}/gb-backend.war"; \
     fi
+
 
 USER ${APP_USR}
 WORKDIR ${APP_USR_HOME}
